@@ -1,6 +1,6 @@
 """
 Model interpretation: Analysis 1 (attention) and Analysis 2 (feature permutation importance).
-See interpretation.md for full description of each analysis.
+See docs/interpretation.md for full description of each analysis.
 """
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

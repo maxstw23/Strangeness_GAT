@@ -4,11 +4,19 @@ This project uses ML to study Omega hyperon production in heavy-ion collisions a
 
 ## Key References
 
-- **`physics.md`** — Physics motivation: baryon number transport, gluon junction picture, and why Omega is the probe of choice.
-- **`method.md`** — ML strategy: how the Omega/anti-Omega classification task encodes the physics goal, and how charge blinding is implemented.
-- **`pipeline.md`** — How to run the project end-to-end: preprocessing, inspection, training, and evaluation.
-- **`data_exploration.md`** — Findings from exploratory analysis of the preprocessed dataset: feature distributions, ΔR, k*, and signal-to-noise discussion.
-- **`interpretation.md`** — Plan for four model interpretability analyses (attention, permutation importance, gradient attribution, CLS embedding correlation).
+- **`docs/physics.md`** — Physics motivation: baryon number transport, gluon junction picture, and why Omega is the probe of choice.
+- **`docs/method.md`** — ML strategy: how the Omega/anti-Omega classification task encodes the physics goal, and how charge blinding is implemented.
+- **`docs/pipeline.md`** — How to run the project end-to-end: preprocessing, inspection, training, and evaluation.
+- **`docs/data_exploration.md`** — Findings from exploratory analysis of the preprocessed dataset: feature distributions, ΔR, k*, and signal-to-noise discussion.
+- **`docs/interpretation.md`** — Plan for four model interpretability analyses (attention, permutation importance, gradient attribution, CLS embedding correlation).
+
+## Development Principles
+
+- **Centralize configuration**: All tunable parameters (features, model hyperparams, paths) belong in `config.py`. Scripts must import from `config.py` rather than hardcoding values. This ensures a single-point change propagates everywhere (e.g., adding/removing a feature only requires editing `FEATURE_NAMES`).
+- **Write elegant code**: Prefer clean, readable solutions over verbose ones. Favour list/dict comprehensions, well-named variables, and small focused functions. When regenerating or refactoring code, actively look for simpler expressions of the same logic — not just correctness, but clarity.
+- **Future-proof by design**: When writing or refactoring code, prefer patterns that will remain correct as features, scripts, or hyperparameters evolve. Avoid magic numbers, hardcoded feature counts, or duplicate constants across files.
+- **Keep docs current**: After any significant change (new feature, architecture update, training result, bug fix, new script), update the relevant markdown file (`CLAUDE.md`, `pipeline.md`, `method.md`, `physics.md`, `interpretation.md`, or `data_exploration.md`). The docs are the single source of truth for the project state.
+- **Commit at natural checkpoints**: After completing a meaningful unit of work (new feature, bug fix, doc update, successful training run), create a git commit. Don't wait until the end of a long session — small, focused commits make history readable and rollbacks safe.
 
 ## Environment
 
