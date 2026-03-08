@@ -1,0 +1,206 @@
+Flow Run 1
+features=['f_pt', 'k_star', 'd_y', 'd_phi', 'cos_theta_star'] | FLOW_DIM=21 | N_LAYERS=6 | HIDDEN=128
+BATCH_SIZE=256 | LR=0.001 | EPOCHS=200 | PATIENCE=30
+Dataset: 103751 Omega, 50081 Anti
+Flow training on Anti events only: 50081 events
+Anti train: 40064 | Anti val: 10017
+Flow parameters: 124,158
+
+Starting flow training (NLL loss on Anti events)...
+
+Epoch   1 | train_nll=18.6753 | val_nll=16.9658 | lr=1.00e-03 | best=16.9658 *
+Epoch   2 | train_nll=16.5889 | val_nll=16.2245 | lr=1.00e-03 | best=16.2245 *
+Epoch   3 | train_nll=16.0895 | val_nll=16.0139 | lr=1.00e-03 | best=16.0139 *
+Epoch   4 | train_nll=15.7872 | val_nll=15.6649 | lr=1.00e-03 | best=15.6649 *
+Epoch   5 | train_nll=15.6422 | val_nll=15.5269 | lr=1.00e-03 | best=15.5269 *
+Epoch   6 | train_nll=15.5076 | val_nll=15.5662 | lr=1.00e-03 | best=15.5269
+Epoch   7 | train_nll=15.4354 | val_nll=15.3323 | lr=1.00e-03 | best=15.3323 *
+Epoch   8 | train_nll=15.3263 | val_nll=15.3972 | lr=1.00e-03 | best=15.3323
+Epoch   9 | train_nll=15.2874 | val_nll=15.2439 | lr=1.00e-03 | best=15.2439 *
+Epoch  10 | train_nll=15.2147 | val_nll=15.2584 | lr=1.00e-03 | best=15.2439
+Epoch  11 | train_nll=15.1448 | val_nll=15.1787 | lr=1.00e-03 | best=15.1787 *
+Epoch  12 | train_nll=15.1242 | val_nll=15.1395 | lr=1.00e-03 | best=15.1395 *
+Epoch  13 | train_nll=15.0975 | val_nll=15.1087 | lr=1.00e-03 | best=15.1087 *
+Epoch  14 | train_nll=15.0234 | val_nll=15.0454 | lr=1.00e-03 | best=15.0454 *
+Epoch  15 | train_nll=15.0137 | val_nll=14.9638 | lr=1.00e-03 | best=14.9638 *
+Epoch  16 | train_nll=14.9709 | val_nll=15.0286 | lr=1.00e-03 | best=14.9638
+Epoch  17 | train_nll=14.9357 | val_nll=14.9136 | lr=1.00e-03 | best=14.9136 *
+Epoch  18 | train_nll=14.8958 | val_nll=15.0386 | lr=1.00e-03 | best=14.9136
+Epoch  19 | train_nll=14.9032 | val_nll=14.9441 | lr=1.00e-03 | best=14.9136
+Epoch  20 | train_nll=14.8611 | val_nll=15.0283 | lr=1.00e-03 | best=14.9136
+Epoch  21 | train_nll=14.8520 | val_nll=14.9971 | lr=1.00e-03 | best=14.9136
+Epoch  22 | train_nll=14.8264 | val_nll=14.9269 | lr=1.00e-03 | best=14.9136
+Epoch  23 | train_nll=14.7980 | val_nll=14.9257 | lr=1.00e-03 | best=14.9136
+Epoch  24 | train_nll=14.7922 | val_nll=14.7964 | lr=1.00e-03 | best=14.7964 *
+Epoch  25 | train_nll=14.7826 | val_nll=14.7924 | lr=1.00e-03 | best=14.7924 *
+Epoch  26 | train_nll=14.7627 | val_nll=14.8443 | lr=1.00e-03 | best=14.7924
+Epoch  27 | train_nll=14.7605 | val_nll=14.8789 | lr=1.00e-03 | best=14.7924
+Epoch  28 | train_nll=14.7333 | val_nll=14.8969 | lr=1.00e-03 | best=14.7924
+Epoch  29 | train_nll=14.7031 | val_nll=14.8018 | lr=1.00e-03 | best=14.7924
+Epoch  30 | train_nll=14.7020 | val_nll=14.9378 | lr=1.00e-03 | best=14.7924
+Epoch  31 | train_nll=14.6837 | val_nll=14.9371 | lr=1.00e-03 | best=14.7924
+Epoch  32 | train_nll=14.6690 | val_nll=14.7430 | lr=1.00e-03 | best=14.7430 *
+Epoch  33 | train_nll=14.6557 | val_nll=14.7877 | lr=1.00e-03 | best=14.7430
+Epoch  34 | train_nll=14.6544 | val_nll=14.8390 | lr=1.00e-03 | best=14.7430
+Epoch  35 | train_nll=14.6291 | val_nll=14.7761 | lr=1.00e-03 | best=14.7430
+Epoch  36 | train_nll=14.6224 | val_nll=14.8196 | lr=1.00e-03 | best=14.7430
+Epoch  37 | train_nll=14.6200 | val_nll=14.7955 | lr=1.00e-03 | best=14.7430
+Epoch  38 | train_nll=14.6008 | val_nll=14.9388 | lr=1.00e-03 | best=14.7430
+Epoch  39 | train_nll=14.5912 | val_nll=14.8063 | lr=1.00e-03 | best=14.7430
+Epoch  40 | train_nll=14.5782 | val_nll=14.6708 | lr=1.00e-03 | best=14.6708 *
+Epoch  41 | train_nll=14.5799 | val_nll=14.8112 | lr=1.00e-03 | best=14.6708
+Epoch  42 | train_nll=14.5759 | val_nll=14.8143 | lr=1.00e-03 | best=14.6708
+Epoch  43 | train_nll=14.5722 | val_nll=14.7688 | lr=1.00e-03 | best=14.6708
+Epoch  44 | train_nll=14.5485 | val_nll=14.6656 | lr=1.00e-03 | best=14.6656 *
+Epoch  45 | train_nll=14.5397 | val_nll=14.7482 | lr=1.00e-03 | best=14.6656
+Epoch  46 | train_nll=14.5337 | val_nll=14.7188 | lr=1.00e-03 | best=14.6656
+Epoch  47 | train_nll=14.5428 | val_nll=14.7137 | lr=1.00e-03 | best=14.6656
+Epoch  48 | train_nll=14.5196 | val_nll=14.7764 | lr=1.00e-03 | best=14.6656
+Epoch  49 | train_nll=14.5103 | val_nll=14.7045 | lr=1.00e-03 | best=14.6656
+Epoch  50 | train_nll=14.5005 | val_nll=14.6931 | lr=1.00e-03 | best=14.6656
+Epoch  51 | train_nll=14.4911 | val_nll=14.7153 | lr=1.00e-03 | best=14.6656
+Epoch  52 | train_nll=14.4726 | val_nll=14.6322 | lr=1.00e-03 | best=14.6322 *
+Epoch  53 | train_nll=14.4772 | val_nll=14.7164 | lr=1.00e-03 | best=14.6322
+Epoch  54 | train_nll=14.4740 | val_nll=14.6283 | lr=1.00e-03 | best=14.6283 *
+Epoch  55 | train_nll=14.4507 | val_nll=14.6805 | lr=1.00e-03 | best=14.6283
+Epoch  56 | train_nll=14.4310 | val_nll=14.6482 | lr=1.00e-03 | best=14.6283
+Epoch  57 | train_nll=14.4525 | val_nll=14.6872 | lr=1.00e-03 | best=14.6283
+Epoch  58 | train_nll=14.4424 | val_nll=14.7862 | lr=1.00e-03 | best=14.6283
+Epoch  59 | train_nll=14.4371 | val_nll=14.7273 | lr=1.00e-03 | best=14.6283
+Epoch  60 | train_nll=14.4155 | val_nll=14.6380 | lr=1.00e-03 | best=14.6283
+Epoch  61 | train_nll=14.4099 | val_nll=14.6298 | lr=1.00e-03 | best=14.6283
+Epoch  62 | train_nll=14.4253 | val_nll=14.6906 | lr=1.00e-03 | best=14.6283
+Epoch  63 | train_nll=14.4176 | val_nll=14.6228 | lr=1.00e-03 | best=14.6228 *
+Epoch  64 | train_nll=14.3994 | val_nll=14.5746 | lr=1.00e-03 | best=14.5746 *
+Epoch  65 | train_nll=14.3838 | val_nll=14.6518 | lr=1.00e-03 | best=14.5746
+Epoch  66 | train_nll=14.3943 | val_nll=14.6542 | lr=1.00e-03 | best=14.5746
+Epoch  67 | train_nll=14.3955 | val_nll=14.6401 | lr=1.00e-03 | best=14.5746
+Epoch  68 | train_nll=14.3897 | val_nll=14.6231 | lr=1.00e-03 | best=14.5746
+Epoch  69 | train_nll=14.3836 | val_nll=14.5739 | lr=1.00e-03 | best=14.5739 *
+Epoch  70 | train_nll=14.3707 | val_nll=14.5989 | lr=1.00e-03 | best=14.5739
+Epoch  71 | train_nll=14.3724 | val_nll=14.6105 | lr=1.00e-03 | best=14.5739
+Epoch  72 | train_nll=14.3616 | val_nll=14.6588 | lr=1.00e-03 | best=14.5739
+Epoch  73 | train_nll=14.3656 | val_nll=14.6034 | lr=1.00e-03 | best=14.5739
+Epoch  74 | train_nll=14.3392 | val_nll=14.7137 | lr=1.00e-03 | best=14.5739
+Epoch  75 | train_nll=14.3467 | val_nll=14.5895 | lr=5.00e-04 | best=14.5739
+Epoch  76 | train_nll=14.1789 | val_nll=14.5181 | lr=5.00e-04 | best=14.5181 *
+Epoch  77 | train_nll=14.1631 | val_nll=14.5319 | lr=5.00e-04 | best=14.5181
+Epoch  78 | train_nll=14.1500 | val_nll=14.4532 | lr=5.00e-04 | best=14.4532 *
+Epoch  79 | train_nll=14.1432 | val_nll=14.4622 | lr=5.00e-04 | best=14.4532
+Epoch  80 | train_nll=14.1385 | val_nll=14.4138 | lr=5.00e-04 | best=14.4138 *
+Epoch  81 | train_nll=14.1328 | val_nll=14.5395 | lr=5.00e-04 | best=14.4138
+Epoch  82 | train_nll=14.1257 | val_nll=14.4289 | lr=5.00e-04 | best=14.4138
+Epoch  83 | train_nll=14.1284 | val_nll=14.4204 | lr=5.00e-04 | best=14.4138
+Epoch  84 | train_nll=14.1201 | val_nll=14.4389 | lr=5.00e-04 | best=14.4138
+Epoch  85 | train_nll=14.1179 | val_nll=14.4539 | lr=5.00e-04 | best=14.4138
+Epoch  86 | train_nll=14.1004 | val_nll=14.4713 | lr=5.00e-04 | best=14.4138
+Epoch  87 | train_nll=14.1091 | val_nll=14.4201 | lr=5.00e-04 | best=14.4138
+Epoch  88 | train_nll=14.1066 | val_nll=14.4707 | lr=5.00e-04 | best=14.4138
+Epoch  89 | train_nll=14.1094 | val_nll=14.4415 | lr=5.00e-04 | best=14.4138
+Epoch  90 | train_nll=14.0976 | val_nll=14.4384 | lr=5.00e-04 | best=14.4138
+Epoch  91 | train_nll=14.0869 | val_nll=14.4574 | lr=2.50e-04 | best=14.4138
+Epoch  92 | train_nll=13.9993 | val_nll=14.3812 | lr=2.50e-04 | best=14.3812 *
+Epoch  93 | train_nll=13.9854 | val_nll=14.3753 | lr=2.50e-04 | best=14.3753 *
+Epoch  94 | train_nll=13.9803 | val_nll=14.3772 | lr=2.50e-04 | best=14.3753
+Epoch  95 | train_nll=13.9758 | val_nll=14.3451 | lr=2.50e-04 | best=14.3451 *
+Epoch  96 | train_nll=13.9730 | val_nll=14.3900 | lr=2.50e-04 | best=14.3451
+Epoch  97 | train_nll=13.9689 | val_nll=14.3779 | lr=2.50e-04 | best=14.3451
+Epoch  98 | train_nll=13.9666 | val_nll=14.3510 | lr=2.50e-04 | best=14.3451
+Epoch  99 | train_nll=13.9558 | val_nll=14.3790 | lr=2.50e-04 | best=14.3451
+Epoch 100 | train_nll=13.9609 | val_nll=14.3755 | lr=2.50e-04 | best=14.3451
+Epoch 101 | train_nll=13.9620 | val_nll=14.3300 | lr=2.50e-04 | best=14.3300 *
+Epoch 102 | train_nll=13.9533 | val_nll=14.3625 | lr=2.50e-04 | best=14.3300
+Epoch 103 | train_nll=13.9540 | val_nll=14.3441 | lr=2.50e-04 | best=14.3300
+Epoch 104 | train_nll=13.9569 | val_nll=14.3543 | lr=2.50e-04 | best=14.3300
+Epoch 105 | train_nll=13.9512 | val_nll=14.3549 | lr=2.50e-04 | best=14.3300
+Epoch 106 | train_nll=13.9456 | val_nll=14.3606 | lr=2.50e-04 | best=14.3300
+Epoch 107 | train_nll=13.9459 | val_nll=14.4218 | lr=2.50e-04 | best=14.3300
+Epoch 108 | train_nll=13.9435 | val_nll=14.3513 | lr=2.50e-04 | best=14.3300
+Epoch 109 | train_nll=13.9416 | val_nll=14.3891 | lr=2.50e-04 | best=14.3300
+Epoch 110 | train_nll=13.9418 | val_nll=14.3948 | lr=2.50e-04 | best=14.3300
+Epoch 111 | train_nll=13.9407 | val_nll=14.3890 | lr=2.50e-04 | best=14.3300
+Epoch 112 | train_nll=13.9413 | val_nll=14.3538 | lr=1.25e-04 | best=14.3300
+Epoch 113 | train_nll=13.8776 | val_nll=14.3112 | lr=1.25e-04 | best=14.3112 *
+Epoch 114 | train_nll=13.8708 | val_nll=14.3342 | lr=1.25e-04 | best=14.3112
+Epoch 115 | train_nll=13.8711 | val_nll=14.3318 | lr=1.25e-04 | best=14.3112
+Epoch 116 | train_nll=13.8698 | val_nll=14.3210 | lr=1.25e-04 | best=14.3112
+Epoch 117 | train_nll=13.8651 | val_nll=14.3298 | lr=1.25e-04 | best=14.3112
+Epoch 118 | train_nll=13.8652 | val_nll=14.3430 | lr=1.25e-04 | best=14.3112
+Epoch 119 | train_nll=13.8624 | val_nll=14.3441 | lr=1.25e-04 | best=14.3112
+Epoch 120 | train_nll=13.8594 | val_nll=14.3181 | lr=1.25e-04 | best=14.3112
+Epoch 121 | train_nll=13.8617 | val_nll=14.3387 | lr=1.25e-04 | best=14.3112
+Epoch 122 | train_nll=13.8617 | val_nll=14.3191 | lr=1.25e-04 | best=14.3112
+Epoch 123 | train_nll=13.8592 | val_nll=14.3327 | lr=1.25e-04 | best=14.3112
+Epoch 124 | train_nll=13.8533 | val_nll=14.3112 | lr=6.25e-05 | best=14.3112
+Epoch 125 | train_nll=13.8241 | val_nll=14.2963 | lr=6.25e-05 | best=14.2963 *
+Epoch 126 | train_nll=13.8211 | val_nll=14.3098 | lr=6.25e-05 | best=14.2963
+Epoch 127 | train_nll=13.8190 | val_nll=14.3087 | lr=6.25e-05 | best=14.2963
+Epoch 128 | train_nll=13.8169 | val_nll=14.3170 | lr=6.25e-05 | best=14.2963
+Epoch 129 | train_nll=13.8167 | val_nll=14.3004 | lr=6.25e-05 | best=14.2963
+Epoch 130 | train_nll=13.8163 | val_nll=14.2927 | lr=6.25e-05 | best=14.2927 *
+Epoch 131 | train_nll=13.8151 | val_nll=14.3092 | lr=6.25e-05 | best=14.2927
+Epoch 132 | train_nll=13.8142 | val_nll=14.3053 | lr=6.25e-05 | best=14.2927
+Epoch 133 | train_nll=13.8134 | val_nll=14.3090 | lr=6.25e-05 | best=14.2927
+Epoch 134 | train_nll=13.8122 | val_nll=14.3096 | lr=6.25e-05 | best=14.2927
+Epoch 135 | train_nll=13.8102 | val_nll=14.3034 | lr=6.25e-05 | best=14.2927
+Epoch 136 | train_nll=13.8118 | val_nll=14.3088 | lr=6.25e-05 | best=14.2927
+Epoch 137 | train_nll=13.8097 | val_nll=14.3255 | lr=6.25e-05 | best=14.2927
+Epoch 138 | train_nll=13.8086 | val_nll=14.3044 | lr=6.25e-05 | best=14.2927
+Epoch 139 | train_nll=13.8083 | val_nll=14.3090 | lr=6.25e-05 | best=14.2927
+Epoch 140 | train_nll=13.8075 | val_nll=14.3132 | lr=6.25e-05 | best=14.2927
+Epoch 141 | train_nll=13.8055 | val_nll=14.3179 | lr=3.13e-05 | best=14.2927
+Epoch 142 | train_nll=13.7885 | val_nll=14.2975 | lr=3.13e-05 | best=14.2927
+Epoch 143 | train_nll=13.7870 | val_nll=14.2976 | lr=3.13e-05 | best=14.2927
+Epoch 144 | train_nll=13.7870 | val_nll=14.2963 | lr=3.13e-05 | best=14.2927
+Epoch 145 | train_nll=13.7865 | val_nll=14.2962 | lr=3.13e-05 | best=14.2927
+Epoch 146 | train_nll=13.7856 | val_nll=14.2910 | lr=3.13e-05 | best=14.2910 *
+Epoch 147 | train_nll=13.7850 | val_nll=14.2920 | lr=3.13e-05 | best=14.2910
+Epoch 148 | train_nll=13.7847 | val_nll=14.3013 | lr=3.13e-05 | best=14.2910
+Epoch 149 | train_nll=13.7848 | val_nll=14.2997 | lr=3.13e-05 | best=14.2910
+Epoch 150 | train_nll=13.7840 | val_nll=14.2932 | lr=3.13e-05 | best=14.2910
+Epoch 151 | train_nll=13.7842 | val_nll=14.3048 | lr=3.13e-05 | best=14.2910
+Epoch 152 | train_nll=13.7833 | val_nll=14.2999 | lr=3.13e-05 | best=14.2910
+Epoch 153 | train_nll=13.7828 | val_nll=14.2944 | lr=3.13e-05 | best=14.2910
+Epoch 154 | train_nll=13.7817 | val_nll=14.2908 | lr=3.13e-05 | best=14.2908 *
+Epoch 155 | train_nll=13.7823 | val_nll=14.2940 | lr=3.13e-05 | best=14.2908
+Epoch 156 | train_nll=13.7812 | val_nll=14.2996 | lr=3.13e-05 | best=14.2908
+Epoch 157 | train_nll=13.7798 | val_nll=14.2955 | lr=1.56e-05 | best=14.2908
+Epoch 158 | train_nll=13.7714 | val_nll=14.2956 | lr=1.56e-05 | best=14.2908
+Epoch 159 | train_nll=13.7707 | val_nll=14.2940 | lr=1.56e-05 | best=14.2908
+Epoch 160 | train_nll=13.7694 | val_nll=14.2906 | lr=1.56e-05 | best=14.2906 *
+Epoch 161 | train_nll=13.7693 | val_nll=14.2884 | lr=1.56e-05 | best=14.2884 *
+Epoch 162 | train_nll=13.7696 | val_nll=14.2963 | lr=1.56e-05 | best=14.2884
+Epoch 163 | train_nll=13.7689 | val_nll=14.2934 | lr=1.56e-05 | best=14.2884
+Epoch 164 | train_nll=13.7687 | val_nll=14.2950 | lr=1.56e-05 | best=14.2884
+Epoch 165 | train_nll=13.7691 | val_nll=14.2949 | lr=1.56e-05 | best=14.2884
+Epoch 166 | train_nll=13.7687 | val_nll=14.2912 | lr=1.56e-05 | best=14.2884
+Epoch 167 | train_nll=13.7679 | val_nll=14.2914 | lr=1.56e-05 | best=14.2884
+Epoch 168 | train_nll=13.7680 | val_nll=14.2996 | lr=1.56e-05 | best=14.2884
+Epoch 169 | train_nll=13.7685 | val_nll=14.2965 | lr=1.56e-05 | best=14.2884
+Epoch 170 | train_nll=13.7676 | val_nll=14.2940 | lr=1.56e-05 | best=14.2884
+Epoch 171 | train_nll=13.7671 | val_nll=14.2973 | lr=1.56e-05 | best=14.2884
+Epoch 172 | train_nll=13.7674 | val_nll=14.2954 | lr=7.81e-06 | best=14.2884
+Epoch 173 | train_nll=13.7617 | val_nll=14.2894 | lr=7.81e-06 | best=14.2884
+Epoch 174 | train_nll=13.7610 | val_nll=14.2936 | lr=7.81e-06 | best=14.2884
+Epoch 175 | train_nll=13.7611 | val_nll=14.2900 | lr=7.81e-06 | best=14.2884
+Epoch 176 | train_nll=13.7609 | val_nll=14.2892 | lr=7.81e-06 | best=14.2884
+Epoch 177 | train_nll=13.7607 | val_nll=14.2945 | lr=7.81e-06 | best=14.2884
+Epoch 178 | train_nll=13.7609 | val_nll=14.2929 | lr=7.81e-06 | best=14.2884
+Epoch 179 | train_nll=13.7602 | val_nll=14.2928 | lr=7.81e-06 | best=14.2884
+Epoch 180 | train_nll=13.7602 | val_nll=14.2933 | lr=7.81e-06 | best=14.2884
+Epoch 181 | train_nll=13.7602 | val_nll=14.2958 | lr=7.81e-06 | best=14.2884
+Epoch 182 | train_nll=13.7603 | val_nll=14.2935 | lr=7.81e-06 | best=14.2884
+Epoch 183 | train_nll=13.7602 | val_nll=14.2939 | lr=3.91e-06 | best=14.2884
+Epoch 184 | train_nll=13.7571 | val_nll=14.2932 | lr=3.91e-06 | best=14.2884
+Epoch 185 | train_nll=13.7568 | val_nll=14.2927 | lr=3.91e-06 | best=14.2884
+Epoch 186 | train_nll=13.7569 | val_nll=14.2917 | lr=3.91e-06 | best=14.2884
+Epoch 187 | train_nll=13.7568 | val_nll=14.2944 | lr=3.91e-06 | best=14.2884
+Epoch 188 | train_nll=13.7567 | val_nll=14.2926 | lr=3.91e-06 | best=14.2884
+Epoch 189 | train_nll=13.7565 | val_nll=14.2916 | lr=3.91e-06 | best=14.2884
+Epoch 190 | train_nll=13.7565 | val_nll=14.2930 | lr=3.91e-06 | best=14.2884
+Epoch 191 | train_nll=13.7566 | val_nll=14.2931 | lr=3.91e-06 | best=14.2884
+
+Early stopping at epoch 191 (no improvement for 30 epochs)
+
+Best val NLL: 14.2884
+Checkpoint saved to models/omega_flow.pth

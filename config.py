@@ -10,7 +10,7 @@ os.makedirs("models", exist_ok=True)
 # Training Hyperparameters
 BATCH_SIZE = 128
 LEARNING_RATE = 0.0005
-EPOCHS = 100
+EPOCHS = 200
 EARLY_STOP_PATIENCE = 25  # stop if no new best Anti recall for this many epochs
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

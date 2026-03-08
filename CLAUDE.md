@@ -1,6 +1,6 @@
-# CLAUDE.md
+# CLAUDE.md — OmegaNet
 
-This project uses ML to study Omega hyperon production in heavy-ion collisions at RHIC BES-II energies.
+**OmegaNet** uses ML to study Omega hyperon production in heavy-ion collisions at RHIC BES-II energies.
 
 ## Key References
 
@@ -18,6 +18,7 @@ This project uses ML to study Omega hyperon production in heavy-ion collisions a
 - **Keep docs current**: After any significant change (new feature, architecture update, training result, bug fix, new script), update the relevant markdown file (`CLAUDE.md`, `pipeline.md`, `method.md`, `physics.md`, `interpretation.md`, or `data_exploration.md`). The docs are the single source of truth for the project state.
 - **Commit at natural checkpoints**: After completing a meaningful unit of work (new feature, bug fix, doc update, successful training run), create a git commit. Don't wait until the end of a long session — small, focused commits make history readable and rollbacks safe.
 - **Be frugal with tokens**: Before running any expensive operation (training, large script execution, extensive searches), pause to plan ways to reduce token usage. Batch related reads/edits, avoid re-reading files, use targeted searches instead of broad exploration. Token efficiency is a real constraint — optimize before executing.
+- **Do not use f_BN as a training metric**: f_BN is a derived scalar that depends on the threshold and counting ratio assumptions — it is not the physics goal and must not be used to compare training runs. The correct diagnostics for model quality are the sweep-optimum score (Omega_recall + Anti_recall − 1) and, ultimately, the kinematic profiles of the separated subpopulations. f_BN is well-constrained by thermal models; the goal is mechanism separation, not f_BN estimation.
 
 ## Environment
 
@@ -67,13 +68,12 @@ Feature means/stds are auto-computed by preprocessing and saved to `data/balance
 
 ## Training
 
-Loss: **per-class-mean asymmetric BCE** (replaces weighted CrossEntropyLoss):
+Loss: **per-class-mean BCE**:
 ```
-loss = anti_weight × mean(−log p_Anti  | Anti events)
-     +               mean(−log p_Omega | Omega events)
+loss = mean(−log p(x)    | Anti events)    # P(pair-produced) → 1
+     + mean(−log(1−p(x)) | Omega events)   # P(pair-produced) → 0
 ```
-- Class imbalance handled automatically (each event weighted equally within its class)
-- `anti_weight = 1` → balanced symmetric solution; `> 1` → emphasises Anti recall
+- Biased approximation of the true PU objective (pair-produced Ω⁻ are incorrectly penalized), but robust in the weak-signal regime where PU gradient subtraction introduces too much variance
 - Checkpoint saved by best argmax score (Anti recall + Omega recall − 1 at t = 0.5)
 - Scheduler: ReduceLROnPlateau on argmax score, patience = 5, factor = 0.5
 
@@ -85,8 +85,16 @@ Key training findings:
 
 ## Physics Goal
 
-Train a classifier on Ω vs Ω̄ events using kaon kinematics only (charge-blinded).
-Expected outcome if BN-carrying signal exists:
-- **Anti recall → 1.0** (all Ω̄⁺ are pair-produced, distinguishable)
-- **Omega recall → 0.5** (only BN-carrying Ω⁻ classified correctly; pair-produced look like Ω̄⁺)
-- The recall asymmetry at the chosen operating point estimates the BN-carrying fraction f_BN
+Use the Ω̄⁺ sample as a **pure labeled proxy for the pair-produced mechanism** to train a classifier
+that assigns each Ω⁻ event a score p(x) ≈ P(pair-produced | kaon kinematics).
+
+The PU mixture is about **production mechanism**, not particle identity:
+- **Positive (P)**: Ω̄⁺ events — all pair-produced, used as the labeled positive class
+- **Unlabeled (U)**: Ω⁻ events — mixture of pair-produced (fraction π) and BN-transport via junction
+
+**The measurement goal is not f_BN** — that is well-constrained by thermal models. The goal is to
+**separate the two production mechanisms** and study how BN-carrying Ω⁻ differ kinematically and
+dynamically from pair-produced Ω⁻:
+- Events with high p(x) → likely pair-produced → profile their kinematics
+- Events with low p(x) → likely BN-carrying → profile their kinematics
+- Differences in k*, Δy, cos(θ*), flow observables, etc. characterise the junction mechanism

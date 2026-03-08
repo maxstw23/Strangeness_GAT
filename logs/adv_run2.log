@@ -1,0 +1,9 @@
+Adv Run 2 | features=['f_pt', 'k_star', 'd_y', 'd_phi', 'cos_theta_star'] | PI=0.483
+Train: 82924 Omega, 40141 Anti | Val: 30767
+N_CRITIC=5 | LAMBDA_GP=10 | LAMBDA_PI=50 | LR=0.0001
+WeighterNet: 274,433 params | CriticNet: 274,433 params
+Starting adversarial training...
+
+Epoch 001 | Wass: 1.8466 | mean(w): 0.9147 (target 0.483) | W_loss: -35.2907 | Score(argmax): 0.0000 | Score(sweep): 0.0009 | No-improve: 0/30
+Epoch 002 | Wass: 1.1639 | mean(w): 0.9986 (target 0.483) | W_loss: -37.5533 | Score(argmax): 0.0000 | Score(sweep): 0.0000 | No-improve: 0/30
+Epoch 003 | Wass: 1.8795 | mean(w): 0.9975 (target 0.483) | W_loss: -53.9374 | Score(argmax): 0.0000 | Score(sweep): 0.0000 | No-improve: 1/30

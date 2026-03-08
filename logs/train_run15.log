@@ -1,0 +1,38 @@
+Run 15 | features=['f_pt', 'k_star', 'd_y', 'd_phi', 'cos_theta_star'] | IN_CHANNELS=5 | D_MODEL=128
+Dataset: 103751 Omega, 50081 Anti-Omega
+Loss: nnPU (Kiryo 2017), pi=0.4827 (fixed)
+EMA decay: 0.999
+Model parameters: 274,498
+Starting training...
+
+Epoch 001 | Omega Rec: 0.339 | Anti Rec: 0.831 | A@0.55: 0.705 | Score: 0.1707 | LR: 0.000500 | No-improve: 0/25
+Epoch 002 | Omega Rec: 0.008 | Anti Rec: 0.997 | A@0.55: 0.924 | Score: 0.0054 | LR: 0.000500 | No-improve: 0/25
+Epoch 003 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 0.951 | Score: 0.0000 | LR: 0.000500 | No-improve: 1/25
+Epoch 004 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 0.981 | Score: 0.0000 | LR: 0.000500 | No-improve: 2/25
+Epoch 005 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 0.989 | Score: 0.0000 | LR: 0.000500 | No-improve: 3/25
+Epoch 006 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 0.992 | Score: 0.0000 | LR: 0.000500 | No-improve: 4/25
+Epoch 007 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000250 | No-improve: 5/25
+Epoch 008 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000250 | No-improve: 6/25
+Epoch 009 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000250 | No-improve: 7/25
+Epoch 010 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000250 | No-improve: 8/25
+Epoch 011 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000250 | No-improve: 9/25
+Epoch 012 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000250 | No-improve: 10/25
+Epoch 013 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000125 | No-improve: 11/25
+Epoch 014 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000125 | No-improve: 12/25
+Epoch 015 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000125 | No-improve: 13/25
+Epoch 016 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000125 | No-improve: 14/25
+Epoch 017 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000125 | No-improve: 15/25
+Epoch 018 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000125 | No-improve: 16/25
+Epoch 019 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000063 | No-improve: 17/25
+Epoch 020 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000063 | No-improve: 18/25
+Epoch 021 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000063 | No-improve: 19/25
+Epoch 022 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000063 | No-improve: 20/25
+Epoch 023 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000063 | No-improve: 21/25
+Epoch 024 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000063 | No-improve: 22/25
+Epoch 025 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000031 | No-improve: 23/25
+Epoch 026 | Omega Rec: 0.000 | Anti Rec: 1.000 | A@0.55: 1.000 | Score: 0.0000 | LR: 0.000031 | No-improve: 24/25
+
+Early stopping: no improvement for 25 epochs.
+
+Best Score: 0.1707 | Anti (argmax): 0.8312 | A@0.55: 0.7049  →  saved to models/omega_transformer.pth
+Log saved to logs/train_run15.log

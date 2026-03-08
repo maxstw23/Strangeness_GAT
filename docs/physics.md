@@ -45,6 +45,16 @@ kaons associated with a pair-produced Omega. Candidate observables for this sepa
 
 ## Project Goal
 
-The goal of this machine learning project is to exploit these kinematic differences to find a
-data-driven method for distinguishing between BN-carrying and pair-produced Omega hyperons,
-providing a novel experimental handle on the gluon junction picture of baryon number transport.
+The goal of this machine learning project is to provide a **data-driven, event-by-event handle
+on production mechanism** for Ω⁻ hyperons. Specifically:
+
+1. Train a classifier to distinguish the pair-produced mechanism from the BN-transport mechanism,
+   using Ω̄⁺ events as a pure labeled proxy for pair-produced production.
+2. Apply the classifier to Ω⁻ events to assign each a soft probability p(x) ≈ P(pair-produced | x).
+3. Use p(x) to profile kinematic and dynamic observables separately for the two production mechanisms:
+   how do k*, Δy, cos θ*, flow observables, and p_T differ between junction-produced and
+   pair-produced Ω⁻?
+
+**Note**: The BN-carrying fraction f_BN is well-constrained by thermal models and is not the
+measurement target. The scientific value is in the kinematic characterisation of the junction
+mechanism — something thermal models cannot provide.

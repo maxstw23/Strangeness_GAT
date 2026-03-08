@@ -1,0 +1,16 @@
+Adv Run 3 | features=['f_pt', 'k_star', 'd_y', 'd_phi', 'cos_theta_star'] | PI=0.483
+Train: 82924 Omega, 40141 Anti | Val: 30767
+N_CRITIC=2 | LAMBDA_GP=10 | GP_INTERVAL=4 | LAMBDA_PI=50 | LR=0.0001
+WeighterNet: 274,433 params | CriticNet: 274,433 params
+Starting adversarial training...
+
+Epoch 001 | Wass: 4.0879 | mean(w): 0.7070 (target 0.483) | W_loss: -14.9489 | Score(argmax): 0.0426 | Score(sweep): 0.1304 | No-improve: 0/30
+Epoch 002 | Wass: 0.7187 | mean(w): 0.9969 (target 0.483) | W_loss: -40.6417 | Score(argmax): 0.0051 | Score(sweep): 0.0183 | No-improve: 0/30
+Epoch 003 | Wass: 0.6698 | mean(w): 0.9994 (target 0.483) | W_loss: -41.8347 | Score(argmax): 0.0007 | Score(sweep): 0.0021 | No-improve: 1/30
+Epoch 004 | Wass: 0.7109 | mean(w): 0.9996 (target 0.483) | W_loss: -42.6041 | Score(argmax): 0.0000 | Score(sweep): 0.0005 | No-improve: 2/30
+Epoch 005 | Wass: 0.7333 | mean(w): 0.9997 (target 0.483) | W_loss: -42.4260 | Score(argmax): 0.0001 | Score(sweep): 0.0003 | No-improve: 3/30
+Epoch 006 | Wass: 0.7724 | mean(w): 0.9998 (target 0.483) | W_loss: -43.6225 | Score(argmax): 0.0000 | Score(sweep): 0.0002 | No-improve: 4/30
+Epoch 007 | Wass: 0.8407 | mean(w): 0.9997 (target 0.483) | W_loss: -43.3923 | Score(argmax): 0.0000 | Score(sweep): 0.0002 | No-improve: 5/30
+Epoch 008 | Wass: 0.9176 | mean(w): 0.9996 (target 0.483) | W_loss: -44.0858 | Score(argmax): 0.0001 | Score(sweep): 0.0002 | No-improve: 6/30
+Epoch 009 | Wass: 0.9663 | mean(w): 0.9995 (target 0.483) | W_loss: -44.5069 | Score(argmax): 0.0001 | Score(sweep): 0.0002 | No-improve: 7/30
+Epoch 010 | Wass: 1.0517 | mean(w): 0.9994 (target 0.483) | W_loss: -45.2733 | Score(argmax): 0.0000 | Score(sweep): 0.0002 | No-improve: 8/30

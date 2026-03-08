@@ -1,0 +1,75 @@
+NCE (DensityRatio) Run 4 | features=['f_pt', 'k_star', 'd_y', 'd_phi', 'cos_theta_star']
+Train: 82924 Omega, 40141 Anti | Val: 30767
+Loss: NCE = -E_Anti[f] + log E_Omega[exp f] | LR=0.0005 | EMA=0.999
+DensityRatioNet: 274,433 params
+Starting NCE training...
+
+Epoch 001 | NCE: -0.1972 | f_anti: 0.344 | f_omega: -0.048 | Δf: 0.392 | Score(argmax): 0.2380 | Score(sweep): 0.2437 | LR: 0.000500 | No-improve: 0/30
+Epoch 002 | NCE: -0.2382 | f_anti: 0.325 | f_omega: -0.139 | Δf: 0.464 | Score(argmax): 0.2649 | Score(sweep): 0.2689 | LR: 0.000500 | No-improve: 0/30
+Epoch 003 | NCE: -0.2516 | f_anti: 0.403 | f_omega: -0.091 | Δf: 0.494 | Score(argmax): 0.2763 | Score(sweep): 0.2831 | LR: 0.000500 | No-improve: 0/30
+Epoch 004 | NCE: -0.2650 | f_anti: 0.294 | f_omega: -0.220 | Δf: 0.514 | Score(argmax): 0.2823 | Score(sweep): 0.2895 | LR: 0.000500 | No-improve: 0/30
+Epoch 005 | NCE: -0.2739 | f_anti: 0.396 | f_omega: -0.140 | Δf: 0.536 | Score(argmax): 0.2869 | Score(sweep): 0.2958 | LR: 0.000500 | No-improve: 0/30
+Epoch 006 | NCE: -0.2632 | f_anti: 0.106 | f_omega: -0.443 | Δf: 0.549 | Score(argmax): 0.2888 | Score(sweep): 0.2977 | LR: 0.000500 | No-improve: 0/30
+Epoch 007 | NCE: -0.1999 | f_anti: -0.041 | f_omega: -0.625 | Δf: 0.584 | Score(argmax): 0.2935 | Score(sweep): 0.2986 | LR: 0.000500 | No-improve: 0/30
+Epoch 008 | NCE: -0.1440 | f_anti: 0.039 | f_omega: -0.557 | Δf: 0.595 | Score(argmax): 0.2940 | Score(sweep): 0.3011 | LR: 0.000500 | No-improve: 0/30
+Epoch 009 | NCE: -0.1807 | f_anti: -0.021 | f_omega: -0.611 | Δf: 0.590 | Score(argmax): 0.2930 | Score(sweep): 0.2995 | LR: 0.000500 | No-improve: 0/30
+Epoch 010 | NCE: -0.0433 | f_anti: -0.294 | f_omega: -0.919 | Δf: 0.625 | Score(argmax): 0.2938 | Score(sweep): 0.2989 | LR: 0.000500 | No-improve: 1/30
+Epoch 011 | NCE: 0.2175 | f_anti: -0.146 | f_omega: -0.798 | Δf: 0.652 | Score(argmax): 0.2931 | Score(sweep): 0.2981 | LR: 0.000500 | No-improve: 2/30
+Epoch 012 | NCE: 0.1193 | f_anti: -0.025 | f_omega: -0.679 | Δf: 0.653 | Score(argmax): 0.2919 | Score(sweep): 0.2996 | LR: 0.000500 | No-improve: 3/30
+Epoch 013 | NCE: 0.1082 | f_anti: -0.085 | f_omega: -0.743 | Δf: 0.659 | Score(argmax): 0.2915 | Score(sweep): 0.2996 | LR: 0.000500 | No-improve: 4/30
+Epoch 014 | NCE: 0.0924 | f_anti: -0.038 | f_omega: -0.690 | Δf: 0.651 | Score(argmax): 0.2909 | Score(sweep): 0.3002 | LR: 0.000250 | No-improve: 5/30
+Epoch 015 | NCE: 0.4187 | f_anti: -0.540 | f_omega: -1.354 | Δf: 0.814 | Score(argmax): 0.2900 | Score(sweep): 0.3015 | LR: 0.000250 | No-improve: 6/30
+Epoch 016 | NCE: 2.4367 | f_anti: -0.616 | f_omega: -1.699 | Δf: 1.082 | Score(argmax): 0.2904 | Score(sweep): 0.3012 | LR: 0.000250 | No-improve: 0/30
+Epoch 017 | NCE: 3.7683 | f_anti: -0.376 | f_omega: -1.605 | Δf: 1.229 | Score(argmax): 0.2919 | Score(sweep): 0.3014 | LR: 0.000250 | No-improve: 1/30
+Epoch 018 | NCE: 4.3850 | f_anti: -0.271 | f_omega: -1.570 | Δf: 1.299 | Score(argmax): 0.2934 | Score(sweep): 0.3033 | LR: 0.000250 | No-improve: 2/30
+Epoch 019 | NCE: 4.3131 | f_anti: -0.223 | f_omega: -1.567 | Δf: 1.344 | Score(argmax): 0.2965 | Score(sweep): 0.3011 | LR: 0.000250 | No-improve: 0/30
+Epoch 020 | NCE: 5.1720 | f_anti: -0.132 | f_omega: -1.521 | Δf: 1.389 | Score(argmax): 0.2965 | Score(sweep): 0.3005 | LR: 0.000250 | No-improve: 1/30
+Epoch 021 | NCE: 4.9158 | f_anti: 0.238 | f_omega: -1.080 | Δf: 1.318 | Score(argmax): 0.2970 | Score(sweep): 0.3021 | LR: 0.000250 | No-improve: 2/30
+Epoch 022 | NCE: 4.8792 | f_anti: 0.080 | f_omega: -1.251 | Δf: 1.332 | Score(argmax): 0.2955 | Score(sweep): 0.3023 | LR: 0.000250 | No-improve: 3/30
+Epoch 023 | NCE: 6.3027 | f_anti: 0.011 | f_omega: -1.552 | Δf: 1.563 | Score(argmax): 0.2952 | Score(sweep): 0.3008 | LR: 0.000250 | No-improve: 4/30
+Epoch 024 | NCE: 6.7196 | f_anti: 0.017 | f_omega: -1.629 | Δf: 1.646 | Score(argmax): 0.2924 | Score(sweep): 0.3011 | LR: 0.000125 | No-improve: 5/30
+Epoch 025 | NCE: 8.0518 | f_anti: 0.111 | f_omega: -2.021 | Δf: 2.132 | Score(argmax): 0.2921 | Score(sweep): 0.2999 | LR: 0.000125 | No-improve: 6/30
+Epoch 026 | NCE: 10.3319 | f_anti: 0.480 | f_omega: -1.952 | Δf: 2.432 | Score(argmax): 0.2910 | Score(sweep): 0.3020 | LR: 0.000125 | No-improve: 7/30
+Epoch 027 | NCE: 9.2044 | f_anti: 0.399 | f_omega: -1.997 | Δf: 2.396 | Score(argmax): 0.2918 | Score(sweep): 0.3011 | LR: 0.000125 | No-improve: 8/30
+Epoch 028 | NCE: 10.8390 | f_anti: 0.657 | f_omega: -1.948 | Δf: 2.605 | Score(argmax): 0.2912 | Score(sweep): 0.2995 | LR: 0.000125 | No-improve: 9/30
+Epoch 029 | NCE: 13.2341 | f_anti: 1.064 | f_omega: -1.820 | Δf: 2.884 | Score(argmax): 0.2943 | Score(sweep): 0.3008 | LR: 0.000125 | No-improve: 10/30
+Epoch 030 | NCE: 13.7280 | f_anti: 1.193 | f_omega: -1.845 | Δf: 3.038 | Score(argmax): 0.2937 | Score(sweep): 0.3016 | LR: 0.000063 | No-improve: 11/30
+Epoch 031 | NCE: 12.5431 | f_anti: 1.153 | f_omega: -2.053 | Δf: 3.207 | Score(argmax): 0.2931 | Score(sweep): 0.3033 | LR: 0.000063 | No-improve: 12/30
+Epoch 032 | NCE: 13.5145 | f_anti: 1.175 | f_omega: -2.188 | Δf: 3.363 | Score(argmax): 0.2930 | Score(sweep): 0.3033 | LR: 0.000063 | No-improve: 13/30
+Epoch 033 | NCE: 14.4830 | f_anti: 1.172 | f_omega: -2.366 | Δf: 3.538 | Score(argmax): 0.2943 | Score(sweep): 0.3040 | LR: 0.000063 | No-improve: 14/30
+Epoch 034 | NCE: 17.0009 | f_anti: 1.590 | f_omega: -2.340 | Δf: 3.929 | Score(argmax): 0.2937 | Score(sweep): 0.3057 | LR: 0.000063 | No-improve: 0/30
+Epoch 035 | NCE: 16.2580 | f_anti: 1.551 | f_omega: -2.475 | Δf: 4.026 | Score(argmax): 0.2924 | Score(sweep): 0.3055 | LR: 0.000063 | No-improve: 0/30
+Epoch 036 | NCE: 18.1037 | f_anti: 1.704 | f_omega: -2.542 | Δf: 4.246 | Score(argmax): 0.2915 | Score(sweep): 0.3042 | LR: 0.000063 | No-improve: 1/30
+Epoch 037 | NCE: 18.5785 | f_anti: 1.713 | f_omega: -2.599 | Δf: 4.312 | Score(argmax): 0.2910 | Score(sweep): 0.3017 | LR: 0.000063 | No-improve: 2/30
+Epoch 038 | NCE: 20.9204 | f_anti: 1.914 | f_omega: -2.545 | Δf: 4.459 | Score(argmax): 0.2892 | Score(sweep): 0.3012 | LR: 0.000063 | No-improve: 3/30
+Epoch 039 | NCE: 19.1887 | f_anti: 1.988 | f_omega: -2.463 | Δf: 4.451 | Score(argmax): 0.2906 | Score(sweep): 0.3021 | LR: 0.000063 | No-improve: 4/30
+Epoch 040 | NCE: 20.6837 | f_anti: 2.100 | f_omega: -2.501 | Δf: 4.601 | Score(argmax): 0.2904 | Score(sweep): 0.3036 | LR: 0.000031 | No-improve: 5/30
+Epoch 041 | NCE: 18.8321 | f_anti: 2.303 | f_omega: -2.458 | Δf: 4.761 | Score(argmax): 0.2907 | Score(sweep): 0.3032 | LR: 0.000031 | No-improve: 6/30
+Epoch 042 | NCE: 20.7697 | f_anti: 2.449 | f_omega: -2.575 | Δf: 5.024 | Score(argmax): 0.2895 | Score(sweep): 0.3050 | LR: 0.000031 | No-improve: 7/30
+Epoch 043 | NCE: 22.0186 | f_anti: 2.572 | f_omega: -2.632 | Δf: 5.204 | Score(argmax): 0.2915 | Score(sweep): 0.3038 | LR: 0.000031 | No-improve: 8/30
+Epoch 044 | NCE: 21.3804 | f_anti: 2.758 | f_omega: -2.597 | Δf: 5.354 | Score(argmax): 0.2916 | Score(sweep): 0.3051 | LR: 0.000031 | No-improve: 9/30
+Epoch 045 | NCE: 21.4548 | f_anti: 2.517 | f_omega: -2.666 | Δf: 5.183 | Score(argmax): 0.2910 | Score(sweep): 0.3024 | LR: 0.000031 | No-improve: 10/30
+Epoch 046 | NCE: 21.8600 | f_anti: 2.621 | f_omega: -2.791 | Δf: 5.412 | Score(argmax): 0.2913 | Score(sweep): 0.3026 | LR: 0.000016 | No-improve: 11/30
+Epoch 047 | NCE: 21.7761 | f_anti: 2.541 | f_omega: -2.890 | Δf: 5.431 | Score(argmax): 0.2912 | Score(sweep): 0.3026 | LR: 0.000016 | No-improve: 12/30
+Epoch 048 | NCE: 25.5847 | f_anti: 2.910 | f_omega: -2.849 | Δf: 5.759 | Score(argmax): 0.2916 | Score(sweep): 0.3030 | LR: 0.000016 | No-improve: 13/30
+Epoch 049 | NCE: 23.4274 | f_anti: 3.096 | f_omega: -2.833 | Δf: 5.929 | Score(argmax): 0.2907 | Score(sweep): 0.3023 | LR: 0.000016 | No-improve: 14/30
+Epoch 050 | NCE: 23.9732 | f_anti: 3.108 | f_omega: -2.827 | Δf: 5.935 | Score(argmax): 0.2901 | Score(sweep): 0.3036 | LR: 0.000016 | No-improve: 15/30
+Epoch 051 | NCE: 22.9000 | f_anti: 2.883 | f_omega: -2.913 | Δf: 5.796 | Score(argmax): 0.2907 | Score(sweep): 0.3036 | LR: 0.000016 | No-improve: 16/30
+Epoch 052 | NCE: 23.2940 | f_anti: 3.068 | f_omega: -2.904 | Δf: 5.972 | Score(argmax): 0.2900 | Score(sweep): 0.3024 | LR: 0.000008 | No-improve: 17/30
+Epoch 053 | NCE: 25.5343 | f_anti: 3.270 | f_omega: -2.895 | Δf: 6.165 | Score(argmax): 0.2912 | Score(sweep): 0.3021 | LR: 0.000008 | No-improve: 18/30
+Epoch 054 | NCE: 24.9044 | f_anti: 3.127 | f_omega: -2.904 | Δf: 6.031 | Score(argmax): 0.2886 | Score(sweep): 0.3024 | LR: 0.000008 | No-improve: 19/30
+Epoch 055 | NCE: 23.5641 | f_anti: 3.213 | f_omega: -2.909 | Δf: 6.123 | Score(argmax): 0.2886 | Score(sweep): 0.3026 | LR: 0.000008 | No-improve: 20/30
+Epoch 056 | NCE: 23.9922 | f_anti: 3.002 | f_omega: -2.946 | Δf: 5.948 | Score(argmax): 0.2882 | Score(sweep): 0.3023 | LR: 0.000008 | No-improve: 21/30
+Epoch 057 | NCE: 24.6055 | f_anti: 3.187 | f_omega: -2.963 | Δf: 6.149 | Score(argmax): 0.2880 | Score(sweep): 0.3015 | LR: 0.000008 | No-improve: 22/30
+Epoch 058 | NCE: 25.1565 | f_anti: 3.181 | f_omega: -2.964 | Δf: 6.145 | Score(argmax): 0.2883 | Score(sweep): 0.3023 | LR: 0.000004 | No-improve: 23/30
+Epoch 059 | NCE: 28.2200 | f_anti: 3.382 | f_omega: -2.908 | Δf: 6.290 | Score(argmax): 0.2885 | Score(sweep): 0.3014 | LR: 0.000004 | No-improve: 24/30
+Epoch 060 | NCE: 24.7584 | f_anti: 3.148 | f_omega: -2.968 | Δf: 6.117 | Score(argmax): 0.2880 | Score(sweep): 0.3012 | LR: 0.000004 | No-improve: 25/30
+Epoch 061 | NCE: 26.6238 | f_anti: 3.204 | f_omega: -2.935 | Δf: 6.138 | Score(argmax): 0.2883 | Score(sweep): 0.3011 | LR: 0.000004 | No-improve: 26/30
+Epoch 062 | NCE: 22.5766 | f_anti: 3.082 | f_omega: -2.969 | Δf: 6.051 | Score(argmax): 0.2886 | Score(sweep): 0.3011 | LR: 0.000004 | No-improve: 27/30
+Epoch 063 | NCE: 25.2939 | f_anti: 3.492 | f_omega: -2.931 | Δf: 6.424 | Score(argmax): 0.2879 | Score(sweep): 0.3017 | LR: 0.000004 | No-improve: 28/30
+Epoch 064 | NCE: 26.2073 | f_anti: 3.526 | f_omega: -2.914 | Δf: 6.440 | Score(argmax): 0.2879 | Score(sweep): 0.3011 | LR: 0.000002 | No-improve: 29/30
+
+Early stopping at epoch 64.
+
+Best sweep score: 0.3057 → saved to models/omega_adversarial.pth
+Log saved to logs/adv_run4.log

@@ -3,24 +3,24 @@
 ## Core Idea
 
 The dataset consists of event-by-event (EbyE) records, each containing one Omega or anti-Omega
-and the kaons reconstructed in the same event. The two populations of Ω⁻ — BN-carrying and
-pair-produced — are not labeled in data and cannot be separated by direct observation. However,
-the following asymmetry motivates an indirect approach:
+and the kaons reconstructed in the same event. The two Ω⁻ populations — BN-carrying and
+pair-produced — are not labeled in data and cannot be separated by direct observation.
 
-- **All Ω̄⁺** are pair-produced (they cannot carry net baryon number).
+The key asymmetry that makes indirect separation possible:
+
+- **All Ω̄⁺** are pair-produced (they cannot carry net baryon number via the junction).
 - **Ω⁻** is a mixture: roughly half pair-produced, half BN-carrying (at BES-II energies where
   N(Ω) ≈ 2·N(Ω̄)).
 
-This means Ω̄⁺ events serve as a **pure sample** of the pair-produced production mechanism.
-If a pair-produced Ω⁻ is kinematically indistinguishable from a Ω̄⁺, then a model trained to
-classify Omega vs anti-Omega events purely from kinematics should:
+This means Ω̄⁺ events serve as a **pure labeled sample of the pair-produced production mechanism**.
+In the Positive-Unlabeled (PU) learning sense:
+- **Positive (P)**: Ω̄⁺ events — known to be pair-produced.
+- **Unlabeled (U)**: Ω⁻ events — mixture of pair-produced and BN-carrying.
 
-- Correctly identify **all** Ω̄⁺ events (high anti-Omega recall).
-- Correctly identify only the **BN-carrying** Ω⁻ events (≈ 50% Omega recall), while
-  misclassifying the pair-produced Ω⁻ as anti-Omega.
-
-The model's recall asymmetry is therefore a direct, data-driven estimator of the BN-carrying
-fraction of Ω⁻.
+The model is trained to learn p(x) ≈ P(pair-produced | kaon kinematics), using Ω̄⁺ as the
+labeled proxy. **The goal is not to estimate f_BN** — that is well-constrained by thermal
+models. The goal is to use p(x) as a **soft event-by-event label for production mechanism**,
+enabling kinematic profiling of the two subpopulations.
 
 ## Blinding the Model to Baryon Identity
 
@@ -51,24 +51,45 @@ until the number of same-sign and opposite-sign kaons are equal. The embedded ka
 kinematic correlation with the Omega, ensuring that any signal the model learns must come from
 the genuine spatial or momentum structure of real associated kaons.
 
-## Expected Outcome and Interpretation
+## Loss Function
 
-If the kinematic hypothesis holds — that BN-carrying and pair-produced Omegas differ in their
-associated kaon distributions — the trained model should exhibit a characteristic recall
-asymmetry:
-
-| Population        | Expected Model Behavior                         |
-|-------------------|-------------------------------------------------|
-| Ω̄⁺ (all pair-produced) | Correctly classified → high anti-Omega recall   |
-| Pair-produced Ω⁻  | Misclassified as anti-Omega (looks the same)    |
-| BN-carrying Ω⁻   | Correctly classified → contributes to Omega recall |
-
-The **BN-carrying fraction** of Ω⁻ is then estimated as:
+The current implementation uses **per-class-mean BCE**:
 
 ```
-f_BN = Omega recall = TP_Omega / (TP_Omega + FN_Omega)
+loss = mean(−log p(x)     | Anti events)    # P(pair-produced) → 1 for labeled positives
+     + mean(−log(1−p(x))  | Omega events)   # P(pair-produced) → 0 for unlabeled
 ```
 
-At 14.6 GeV, where N(Ω) ≈ 2·N(Ω̄), we expect f_BN ≈ 0.5 if the model works as intended.
-A deviation from this expectation would indicate either incomplete separation or a violation
-of the kinematic hypothesis.
+This is a biased approximation of the true PU objective: it incorrectly penalizes
+pair-produced Ω⁻ for "looking like Anti," since the Omega target of 0 is wrong for the
+pair-produced sub-population. However, in practice the threshold sweep (see below) compensates
+post-hoc, and BCE produces more stable training than PU losses in the weak-signal regime.
+
+**Why PU losses fail here**: Standard nnPU/uPU losses are designed for problems where positive
+and negative classes are reasonably separable. In our case, pair-produced Ω⁻ and Ω̄⁺ have
+*identical* kaon kinematics by hypothesis — the PU correction subtracts a quantity of the same
+order as the signal, introducing variance that overwhelms the gradient. BCE with threshold sweep
+is a lower-variance estimator for the same underlying quantity.
+
+## Expected Outcome and Downstream Use
+
+If BN-carrying and pair-produced Omegas differ in their associated kaon distributions, the
+model should produce a discriminating score p(x):
+
+| Population | Score distribution |
+|---|---|
+| Ω̄⁺ (all pair-produced) | p(x) concentrated near 1 |
+| Pair-produced Ω⁻ | p(x) concentrated near 1 (same mechanism) |
+| BN-carrying Ω⁻ | p(x) concentrated near 0 (different mechanism) |
+
+The Omega score distribution will be a **mixture** of the two components. A threshold sweep
+identifies the operating point that maximises separation quality.
+
+**Primary downstream use**: Apply the trained model to the Ω⁻ sample and use p(x) as a
+soft mechanism label. Profile kinematic observables (k*, Δy, cos θ*, flow angles, p_T) as a
+function of p(x) to characterise how BN-carrying Omegas differ from pair-produced ones.
+This provides the first data-driven, event-by-event handle on the junction production mechanism.
+
+**Recall metrics are diagnostics, not the measurement**: Anti recall and Omega recall at a
+chosen threshold are used to assess separation quality, but the physics output is the
+differential kinematic profile, not a single number like f_BN.

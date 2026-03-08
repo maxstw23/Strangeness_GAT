@@ -14,7 +14,6 @@ from transformer_model import OmegaTransformer
 from tqdm import tqdm
 
 CHECKPOINT_THRESHOLD = 0.55  # Logged for reference; checkpoint is now by argmax score
-LABEL_SMOOTH_EPS = 0.05       # Label smoothing: damps gradient when predictions are confident
 EMA_DECAY = 0.999             # EMA shadow model decay for stable checkpointing
 
 
@@ -93,10 +92,9 @@ def run_training():
     n_o = (labels_t == 0).sum().item()
     n_a = (labels_t == 1).sum().item()
 
-    ANTI_WEIGHT = 2.0
     log(f"Run {run_number} | features={config.FEATURE_NAMES} | IN_CHANNELS={config.IN_CHANNELS} | D_MODEL={config.D_MODEL}")
     log(f"Dataset: {n_o} Omega, {n_a} Anti-Omega")
-    log(f"Loss: per-class-mean BCE, anti_weight={ANTI_WEIGHT}, label_smooth_eps={LABEL_SMOOTH_EPS}")
+    log(f"Loss: per-class-mean BCE")
     log(f"EMA decay: {EMA_DECAY}")
 
     # 80/20 split (seed already fixed above)
@@ -142,10 +140,10 @@ def run_training():
             p = torch.softmax(out, dim=1)[:, 1].clamp(1e-7, 1 - 1e-7)
             is_a = (y == 1)
             is_o = (y == 0)
-            # Per-class-mean BCE with label smoothing (eps damps gradient near hard boundaries)
-            eps = LABEL_SMOOTH_EPS
-            loss = (ANTI_WEIGHT * -((1 - eps) * torch.log(p[is_a]) + eps * torch.log(1 - p[is_a])).mean()
-                    + -((1 - eps) * torch.log(1 - p[is_o]) + eps * torch.log(p[is_o])).mean())
+
+            # Per-class-mean BCE
+            loss = (-torch.log(p[is_a]).mean() + -torch.log(1 - p[is_o]).mean())
+
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
