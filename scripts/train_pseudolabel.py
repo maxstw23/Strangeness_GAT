@@ -138,13 +138,16 @@ def compute_weights(model, train_data_xy, device):
     return weights
 
 
-def run_training():
+def run_training(start_iter=1, resume_log=None):
     random.seed(42)
     torch.manual_seed(42)
     torch.cuda.manual_seed(42)
 
-    run_number = get_next_run_number()
-    log_path = f"logs/pl_run{run_number}.log"
+    if resume_log:
+        log_path = resume_log
+    else:
+        run_number = get_next_run_number()
+        log_path = f"logs/pl_run{run_number}.log"
 
     def log(msg):
         print(msg)
@@ -173,7 +176,8 @@ def run_training():
     n_o = (labels_t == 0).sum().item()
     n_a = (labels_t == 1).sum().item()
 
-    log(f"PL Run {run_number} | features={config.FEATURE_NAMES} | IN_CHANNELS={config.IN_CHANNELS}")
+    run_label = f"PL Run {run_number}" if not resume_log else f"PL Run (resumed, log={resume_log})"
+    log(f"{run_label} | features={config.FEATURE_NAMES} | IN_CHANNELS={config.IN_CHANNELS}")
     log(f"Dataset: {n_o} Omega, {n_a} Anti-Omega")
     log(f"EM_ITER={EM_ITER} | GAMMA={GAMMA}")
 
@@ -200,9 +204,17 @@ def run_training():
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     log(f"OmegaTransformer: {n_params:,} parameters")
 
+    iter_save_fmt = PL_SAVE_PATH.replace(".pth", "_iter{}.pth")
+
+    # Resume: load checkpoint from the last completed iteration
+    if start_iter > 1:
+        resume_ckpt = iter_save_fmt.format(start_iter - 1)
+        model.load_state_dict(torch.load(resume_ckpt, map_location=config.DEVICE))
+        log(f"Resumed from {resume_ckpt} (starting at EM iteration {start_iter})")
+
     global_best_score = -1.0
 
-    for em_iter in range(1, EM_ITER + 1):
+    for em_iter in range(start_iter, EM_ITER + 1):
         log(f"\n{'='*60}")
         log(f"EM Iteration {em_iter}/{EM_ITER}")
 
@@ -304,6 +316,9 @@ def run_training():
                 if score > global_best_score:
                     global_best_score = score
                     torch.save(ema_model.state_dict(), PL_SAVE_PATH)
+            # Always save this iteration's best (overwrite each epoch within iter)
+            if score >= best_score:
+                torch.save(ema_model.state_dict(), iter_save_fmt.format(em_iter))
             else:
                 no_improve += 1
 
@@ -318,4 +333,11 @@ def run_training():
 
 
 if __name__ == "__main__":
-    run_training()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start-iter", type=int, default=1,
+                        help="EM iteration to start from (loads iter{N-1}.pth checkpoint)")
+    parser.add_argument("--resume-log", type=str, default=None,
+                        help="Append to this existing log file instead of creating a new one")
+    args = parser.parse_args()
+    run_training(start_iter=args.start_iter, resume_log=args.resume_log)
