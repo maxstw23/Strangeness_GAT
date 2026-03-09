@@ -145,7 +145,13 @@ def run_balanced_preprocessing(input_file, output_file):
         k_star       = compute_kstar(f_px, f_py, f_pz, o_px, o_py, o_pz)
         cos_theta_st = compute_cos_theta_star(f_px, f_py, f_pz, o_px, o_py, o_pz)
         # |d_y|: absolute rapidity difference — Au+Au is forward-backward symmetric
-        d_y  = np.abs(compute_delta_y(f_px, f_py, f_pz, o_px, o_py, o_pz))
+        delta_y = compute_delta_y(f_px, f_py, f_pz, o_px, o_py, o_pz)
+        d_y  = np.abs(delta_y)
+        # d_y_signed = |y_K| − |y_Ω|: midrapidity proximity gap
+        # Negative → kaon closer to midrapidity than Omega (expected for junction fragmentation)
+        y_o = compute_omega_rapidity(o_px, o_py, o_pz)
+        y_k = delta_y + y_o
+        d_y_signed = np.abs(y_k) - abs(y_o)
         # |d_phi|: absolute azimuthal separation in [0, π] — no preferred azimuthal direction
         d_phi = np.abs(((f_phi - o_phi) + np.pi) % (2 * np.pi) - np.pi)
 
@@ -161,15 +167,11 @@ def run_balanced_preprocessing(input_file, output_file):
         f_cos_psi1  = np.cos(f_phi - psi1)
         f_cos2_psi2 = np.cos(2.0 * (f_phi - psi2))
 
-        # Node Features: [f_pt, k_star, d_y, d_phi, o_pt, cos_theta_star,
-        #                 o_cos_psi1, o_cos2_psi2, f_cos_psi1, f_cos2_psi2]
-        # d_y = |y_K - y_Omega|, d_phi = |phi_K - phi_Omega|: absolute separations (Au+Au symmetric)
-        # All kaons are opposite-sign (strangeness-balancing partners); rel_q dropped (constant).
-        # o_pt is broadcast: same value for all kaons in the event (global Omega context)
         o_pt_broadcast = np.full(len(f_px), o_pt)
         node_features = np.stack([
             f_pt, k_star, d_y, d_phi, o_pt_broadcast, cos_theta_st,
-            o_cos_psi1, o_cos2_psi2, f_cos_psi1, f_cos2_psi2
+            o_cos_psi1, o_cos2_psi2, f_cos_psi1, f_cos2_psi2,
+            d_y_signed  # index 10: |y_K| − |y_Ω|
         ], axis=1)
 
         y_label = 1 if o_charge > 0 else 0
@@ -191,7 +193,8 @@ def run_balanced_preprocessing(input_file, output_file):
     print(f"Feature stats saved to {stats_file}")
     feature_names = [
         "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",
-        "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2"
+        "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2",
+        "d_y_signed"
     ]
     for name, m, s in zip(feature_names, means, stds):
         print(f"  {name}: mean={m:.4f}, std={s:.4f}")

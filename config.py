@@ -29,7 +29,8 @@ KSTAR_CLIP = 8.0
 FEATURE_REGISTRY = [
     "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",   # 0–5
     "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2",     # 6–9
-    "o_y_abs",                                                       # 10 (unpadded only)
+    "d_y_signed",                                                    # 10: |y_K|−|y_Ω| (padded+unpadded)
+    "o_y_abs",                                                       # 11: |y_Ω| (unpadded only)
 ]
 
 # Active features for this run — edit ONLY this list to change the feature set.
