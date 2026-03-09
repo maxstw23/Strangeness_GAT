@@ -26,6 +26,8 @@ _FEAT_LIMS = {
     "d_phi":          (0.0, 3.2),   # now |d_phi|
     "o_pt":           (0.0, 3.5),
     "cos_theta_star": (-1.0, 1.0),
+    "d_y_signed":     (-2.0, 2.0),
+    "o_y_abs":        (0.0, 1.5),
 }
 
 

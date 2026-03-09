@@ -98,18 +98,20 @@ def main():
     print(f"Best score {scores[best_idx]:.4f} at t={thresholds[best_idx]:.3f}: "
           f"Anti={a_recs[best_idx]:.4f}, Omega={o_recs[best_idx]:.4f}")
 
+    # Physics operating point: threshold closest to Anti recall = 0.90
+    TARGET_ANTI_REC = 0.90
+    op_idx = np.argmin(np.abs(a_recs - TARGET_ANTI_REC))
+    print(f"Operating point (Anti≈{TARGET_ANTI_REC}) at t={thresholds[op_idx]:.3f}: "
+          f"Anti={a_recs[op_idx]:.4f}, Omega={o_recs[op_idx]:.4f}")
+
     # --- Plot ---
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
     # 1. Tradeoff curve: Anti recall vs Omega recall
     ax = axes[0]
     sc = ax.scatter(a_recs, o_recs, c=thresholds, cmap='viridis', s=4, alpha=0.8)
-    ax.scatter(a_recs[best_idx], o_recs[best_idx], c='red', s=80, zorder=5, label=f'Best score t={thresholds[best_idx]:.2f}')
-    # Reference lines
-    ax.axvline(1.0, color='gray', ls='--', lw=0.8, alpha=0.5)
-    ax.axhline(0.5, color='gray', ls='--', lw=0.8, alpha=0.5, label='Omega rec=0.5 (physics target)')
-    ax.axvline(0.5, color='gray', ls=':', lw=0.8, alpha=0.5)
-    # Random classifier diagonal
+    ax.scatter(a_recs[op_idx], o_recs[op_idx], c='red', s=80, zorder=5,
+               label=f'Operating point (Anti≈{TARGET_ANTI_REC}, t={thresholds[op_idx]:.2f})')
     ax.plot([0, 1], [1, 0], 'k--', lw=0.8, alpha=0.3, label='Random classifier')
     plt.colorbar(sc, ax=ax, label='Threshold')
     ax.set_xlabel('Anti Recall')
@@ -123,8 +125,9 @@ def main():
     # 2. Score vs threshold
     ax = axes[1]
     ax.plot(thresholds, scores, 'b-', lw=1.5)
-    ax.axvline(thresholds[best_idx], color='red', ls='--', lw=1, label=f'Best t={thresholds[best_idx]:.2f}')
-    ax.axhline(scores[best_idx], color='red', ls=':', lw=0.8)
+    ax.axvline(thresholds[op_idx], color='red', ls='--', lw=1,
+               label=f'Operating point t={thresholds[op_idx]:.2f}')
+    ax.axhline(scores[op_idx], color='red', ls=':', lw=0.8)
     ax.set_xlabel('Threshold')
     ax.set_ylabel('Score (Anti_rec + Omega_rec - 1)')
     ax.set_title('Score vs Threshold')
@@ -136,8 +139,8 @@ def main():
     bins = np.linspace(0, 1, 60)
     ax.hist(p_anti[is_omega], bins=bins, alpha=0.6, density=True, label=f'Omega (n={n_omega})', color='steelblue')
     ax.hist(p_anti[is_anti], bins=bins, alpha=0.6, density=True, label=f'Anti (n={n_anti})', color='tomato')
-    ax.axvline(0.5, color='k', ls='--', lw=1, label='t=0.5')
-    ax.axvline(thresholds[best_idx], color='red', ls='--', lw=1, label=f'Best t={thresholds[best_idx]:.2f}')
+    ax.axvline(thresholds[op_idx], color='red', ls='--', lw=1,
+               label=f'Operating point t={thresholds[op_idx]:.2f}')
     ax.set_xlabel('P(Anti | event)')
     ax.set_ylabel('Density')
     ax.set_title('Score Distribution')
