@@ -168,10 +168,11 @@ def run_balanced_preprocessing(input_file, output_file):
         f_cos2_psi2 = np.cos(2.0 * (f_phi - psi2))
 
         o_pt_broadcast = np.full(len(f_px), o_pt)
+        o_y_abs = np.full(len(f_px), abs(y_o))  # index 11: |y_Ω| broadcast
         node_features = np.stack([
             f_pt, k_star, d_y, d_phi, o_pt_broadcast, cos_theta_st,
             o_cos_psi1, o_cos2_psi2, f_cos_psi1, f_cos2_psi2,
-            d_y_signed  # index 10: |y_K| − |y_Ω|
+            d_y_signed, o_y_abs  # index 10, 11
         ], axis=1)
 
         y_label = 1 if o_charge > 0 else 0
@@ -194,7 +195,7 @@ def run_balanced_preprocessing(input_file, output_file):
     feature_names = [
         "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",
         "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2",
-        "d_y_signed"
+        "d_y_signed", "o_y_abs"
     ]
     for name, m, s in zip(feature_names, means, stds):
         print(f"  {name}: mean={m:.4f}, std={s:.4f}")
