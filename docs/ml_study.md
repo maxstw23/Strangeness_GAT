@@ -203,6 +203,45 @@ observables do not carry enough information to separate the two mechanisms more 
 
 ---
 
+### 7. Unpadded GRL + Directed Rapidity Feature (planned)
+
+**Motivation — two issues with the previous GRL (grl_run2)**:
+
+1. **The padding made the GRL vacuous.** The balanced preprocessing pads K⁻ in Ω̄⁺ events
+   to match the K⁺ count, so n_kaons(Ω⁻) = n_kaons(Ω̄⁺) exactly. The GRL adversary had
+   nothing real to remove. On unpadded data n_kaons(Ω⁻) ≈ n_{K+} > n_{K-} ≈ n_kaons(Ω̄⁺)
+   due to the global K⁺/K⁻ asymmetry — the GRL would be doing genuine work.
+
+2. **The directed rapidity gap is a physics-motivated new feature.** The current |Δy| strips
+   the sign, discarding per-event information that is physically meaningful for the junction
+   hypothesis. Junction-transported Ω⁻ originate from the beam remnant at large |y_Omega|;
+   their associated kaons come from string fragmentation *between* the Omega and midrapidity,
+   and should be preferentially at **smaller |y|** than the Omega. Encoding this as
+   d_y_signed = sign(y_Omega) × (y_K − y_Omega) directly probes the string topology:
+   - **Negative** → kaon is on the midrapidity side of the Omega (expected for junction)
+   - **Near zero** → symmetric (expected for pair-produced)
+
+   A new broadcast feature **|y_Omega|** is also added: junction Ω⁻ from beam stopping should
+   be displaced further from midrapidity than thermally pair-produced Ω̄⁺.
+
+**Implementation**: `scripts/preprocess_data.py --mode unpadded` generates
+`data/unpadded_omega_anti.pt` (11 features: indices 0–9 as before but index 2 = d_y_signed,
+plus index 10 = o_y_abs). Training with `scripts/train_grl.py --data unpadded`.
+
+**Expected signals** (if junction-string hypothesis holds):
+- d_y_signed mean < 0 for the BN-transport Ω⁻ sub-population
+- |y_Omega| larger for BN-transport Ω⁻ than for Ω̄⁺
+- GRL adversary loss should start high and decrease (genuine bias being removed)
+- Score improvement if directed rapidity encodes mechanism information
+
+**Decision gate**: if Stage 1 (5 core features, unpadded GRL) score > 0.315 and adversary
+loss behaviour confirms real debiasing, proceed to Stage 2 (add d_y_signed and o_y_abs).
+Otherwise fall back to padded approach with new features.
+
+*Results: pending.*
+
+---
+
 ## Summary and Outlook
 
 Every approach — new features, adversarial debiasing, augmentation, proper PU label correction —

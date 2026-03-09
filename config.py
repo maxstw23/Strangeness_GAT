@@ -4,6 +4,8 @@ import os
 # Paths and Naming
 DATA_PATH = "data/balanced_omega_anti.pt"
 STATS_PATH = "data/balanced_omega_anti_stats.pt"
+DATA_PATH_UNPADDED  = "data/unpadded_omega_anti.pt"
+STATS_PATH_UNPADDED = "data/unpadded_omega_anti_stats.pt"
 MODEL_SAVE_PATH = "models/omega_transformer.pth"
 os.makedirs("models", exist_ok=True)
 
@@ -21,9 +23,13 @@ KSTAR_CLIP = 8.0
 
 # ── Feature configuration ──────────────────────────────────────────────────────
 # All features produced by preprocess_data.py in canonical order.
+# Indices 0–9: balanced (padded) dataset; indices 0–10: unpadded dataset.
+# In the unpadded dataset index 2 ("d_y") stores the directed rapidity gap
+# d_y_signed = sign(y_Omega) × (y_K − y_Omega); index 10 is o_y_abs.
 FEATURE_REGISTRY = [
-    "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",
-    "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2"
+    "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",   # 0–5
+    "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2",     # 6–9
+    "o_y_abs",                                                       # 10 (unpadded only)
 ]
 
 # Active features for this run — edit ONLY this list to change the feature set.

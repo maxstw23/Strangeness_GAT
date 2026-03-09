@@ -25,6 +25,7 @@ import sys
 import os
 import copy
 import glob
+import argparse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models"))
 
@@ -45,13 +46,13 @@ EMA_DECAY        = 0.999
 GRL_SAVE_PATH    = "models/omega_grl.pth"
 
 
-def get_next_run_number():
+def get_next_run_number(prefix="grl_run"):
     os.makedirs("logs", exist_ok=True)
-    existing = glob.glob("logs/grl_run*.log")
+    existing = glob.glob(f"logs/{prefix}*.log")
     nums = [
-        int(os.path.basename(f).replace("grl_run", "").replace(".log", ""))
+        int(os.path.basename(f).replace(prefix, "").replace(".log", ""))
         for f in existing
-        if os.path.basename(f).replace("grl_run", "").replace(".log", "").isdigit()
+        if os.path.basename(f).replace(prefix, "").replace(".log", "").isdigit()
     ]
     return max(nums) + 1 if nums else 1
 
@@ -82,13 +83,31 @@ def collate_fn(batch):
     return padded, torch.stack(ys), mask, lengths
 
 
-def run_training():
+def run_training(args):
     random.seed(42)
     torch.manual_seed(42)
     torch.cuda.manual_seed(42)
 
-    run_number = get_next_run_number()
-    log_path = f"logs/grl_run{run_number}.log"
+    # Apply data-source overrides
+    if args.data == "unpadded":
+        config.DATA_PATH  = config.DATA_PATH_UNPADDED
+        config.STATS_PATH = config.STATS_PATH_UNPADDED
+
+    # Apply feature override (comma-separated list of names from FEATURE_REGISTRY)
+    if args.features is not None:
+        names = [f.strip() for f in args.features.split(",")]
+        config.FEATURE_NAMES = names
+        config.FEATURE_IDX   = [config.FEATURE_REGISTRY.index(f) for f in names]
+        config.IN_CHANNELS   = len(names)
+        config.KSTAR_IDX     = names.index("k_star") if "k_star" in names else None
+
+    global GRL_SAVE_PATH
+    if args.data == "unpadded":
+        GRL_SAVE_PATH = "models/omega_grl_unpadded.pth"
+
+    log_prefix = "grl_unpadded_run" if args.data == "unpadded" else "grl_run"
+    run_number = get_next_run_number(log_prefix)
+    log_path = f"logs/{log_prefix}{run_number}.log"
 
     def log(msg):
         print(msg)
@@ -252,4 +271,9 @@ def run_training():
 
 
 if __name__ == "__main__":
-    run_training()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data", choices=["padded", "unpadded"], default="padded",
+                        help="padded: balanced dataset (default); unpadded: no K⁻ padding, directed rapidity features")
+    parser.add_argument("--features", type=str, default=None,
+                        help="Comma-separated feature names from FEATURE_REGISTRY (overrides config.FEATURE_NAMES)")
+    run_training(parser.parse_args())
