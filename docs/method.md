@@ -52,6 +52,41 @@ built from other Ω̄⁺ events with similar Omega kinematics, binned on (|y_Ω|
 they are paired with — a global pool was found to produce pathological d_y_signed values that
 the model exploited as a padding artifact.
 
+## Model Architecture
+
+The classifier is an **OmegaTransformer** (`models/transformer_model.py`): a 2-layer Pre-LN
+Transformer encoder with a CLS token, no positional encoding, and a 2-class output head.
+
+```
+Input: (n_kaons × 6) feature matrix per event
+  ↓ Linear projection → d_model = 128
+  ↓ Prepend CLS token
+  ↓ TransformerEncoder (2 layers, 4 heads, FFN dim 256, Pre-LayerNorm)
+  ↓ CLS token output → MLP classifier → 2-class softmax
+Output: p(x) = P(pair-produced)
+```
+
+Key design choices:
+- **No positional encoding**: the model is permutation-invariant over kaons — consistent with the
+  physics, where there is no meaningful ordering among associated kaons.
+- **CLS token aggregation**: the CLS token attends to all kaons and aggregates their evidence;
+  this allows the model to learn multi-kaon correlations rather than single-kaon features.
+- **274,626 parameters** — deliberately small to avoid overfitting on weak signal.
+
+Input features (6, after ablation studies):
+
+| Feature | Description |
+|---|---|
+| `f_pt` | Kaon pT [GeV/c] |
+| `k*` | Lorentz-invariant relative momentum in K-Ω pair rest frame |
+| `\|y_K − y_Ω\|` | Absolute rapidity separation |
+| `\|φ_K − φ_Ω\|` | Absolute azimuthal separation |
+| `cos θ*` | Beam-axis angle in pair rest frame |
+| `\|y_K\| − \|y_Ω\|` | Midrapidity proximity gap (signed) |
+
+Excluded features: `o_pt` (p̄ absorption biases Ω̄⁺ efficiency), `o_y_abs` (introduces biased
+rapidity shift), EP cosines (confirmed inert, run18).
+
 ## Loss Function
 
 The current implementation uses **per-class-mean BCE**:
@@ -94,3 +129,28 @@ This provides the first data-driven, event-by-event handle on the junction produ
 
 **Recall metrics are diagnostics, not the measurement**: The physics output is the
 differential kinematic profile, not a single number like f_BN.
+
+## Subpopulation Purity Estimation
+
+Given the PU mixture model p_Ω(x) = π · p_PP(x) + (1−π) · p_BN(x), the mechanism purity
+of any score-selected subset S of Ω⁻ events is:
+
+```
+PP purity(S) = π · f_Anti(S) / f_Omega(S)
+BN purity(S) = [f_Omega(S) − π · f_Anti(S)] / f_Omega(S)
+```
+
+where f_X(S) = fraction of class X whose score falls in S, and π = N(Ω̄⁺)/N(Ω⁻) ≈ 0.478
+(estimated from dataset proportions, consistent with thermal model expectation at BES-II).
+
+The optimal operating points (maximising purity × √N figure of merit) are:
+
+| Sample | Score cut | Mechanism purity | N events |
+|---|---|---|---|
+| PP-enriched  | Top 32% of Ω⁻ by score | 99% pair-produced | ~35,600 |
+| BN-enriched  | Bottom 65% of Ω⁻ by score | 77% BN-carrying | ~72,000 |
+| BN-enriched (tight) | Bottom 30% of Ω⁻ by score | 86% BN-carrying | ~33,000 |
+
+The PP-enriched sample is essentially saturated at 100% purity for all cuts stricter than ~32%,
+because the model places nearly all Anti events above that threshold. The BN sample purity
+rises slowly as the cut tightens, so the FOM optimum is at a relatively loose cut (65%).
