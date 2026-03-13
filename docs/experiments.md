@@ -122,3 +122,19 @@ Checkpoint criterion: save only when `adv_loss > 0.95 × log(n_bins)` (adversary
 - Global K⁻ pool padding was a real artifact masking genuine signal
 - GRL regression adversary (MSE on log n_kaons) produces sign-flip Nash: encoder anti-encodes multiplicity, fresh R²=−1.19, padded O@A=0.185 — unusable
 - GRL classification adversary with λ<1 (run7): adversary settles above chance-floor, O@A drops only to 0.606 — incomplete debiasing
+
+---
+
+## Efficiency-Weighted Features (run43–45)
+
+**Goal**: Add per-kaon inverse efficiency `eff_weight = 1/ε(pT, η)` to correct for detector acceptance.
+
+**Config**: K⁺ and K⁻ efficiency params are identical (no charge-dependent correction).
+
+| Run | Data | Features | O@A=0.90 | Notes |
+|-----|------|----------|----------|-------|
+| run43 | unpadded | f_pt, k_star, d_y, d_phi, cos_θ*, d_y_signed, net_kaon | **0.3162** | Baseline (no eff_weight) |
+| run44 | **stale** | + eff_weight | **1.0000** | **DATA LEAKAGE ARTIFACT** — Anti-Omega eff_weight was frozen at 1.0 in stale .pt file; after z-norm this became trivial separator |
+| run45 | fresh | + eff_weight | **0.3332** | Fresh preprocessing; realistic ~5% gain. eff_weight provides η information without charge leakage |
+
+**Lesson**: Always re-preprocess after config changes. Stale feature distributions can appear to be perfect signals. Run 44 is disregarded — run 45 is the valid eff_weight baseline.

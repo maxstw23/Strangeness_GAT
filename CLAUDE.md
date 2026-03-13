@@ -23,6 +23,16 @@
 - Python venv at `venv/`. Always use `venv/bin/python` from the project root.
 - CUDA: RTX 3070, CUDA 12.8, PyTorch 2.6.0+cu124.
 
+### First-Time Setup
+
+Run from project root:
+```bash
+bash setup.sh
+source venv/bin/activate
+```
+
+This installs PyTorch (CUDA-enabled), tqdm, uproot, and awkward. All preprocessing/training scripts require the venv to be active.
+
 ## Model
 
 **OmegaTransformer** (`models/transformer_model.py`) — 2-layer Pre-LN Transformer, CLS token, no positional encoding.
