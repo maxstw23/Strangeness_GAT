@@ -21,6 +21,30 @@ HIDDEN_CHANNELS = 64
 
 KSTAR_CLIP = 8.0
 
+# ── Kaon efficiency correction (2D: pT, eta) ──────────────────────────────────
+# GetEfficiency2D formula: (P0 + P3*pT + P4*pT²) * exp(-(P1/pT)^P2) * exp(-((eta/P5)²)^P6)
+# Parametrized separately for K+ and K- across 9 centrality bins (indices cent-1)
+EFFICIENCY_PARAMS = {
+    "Kp": {
+        "P0": [0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441],
+        "P1": [0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589],
+        "P2": [2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077],
+        "P3": [0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208],
+        "P4": [-0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983],
+        "P5": [1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937],
+        "P6": [3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326],
+    },
+    "Km": {
+        "P0": [0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441, 0.77991441],
+        "P1": [0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589, 0.16110589],
+        "P2": [2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077, 2.1266077],
+        "P3": [0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208, 0.038097208],
+        "P4": [-0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983, -0.0048513983],
+        "P5": [1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937, 1.5617937],
+        "P6": [3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326, 3.4819326],
+    },
+}
+
 # ── Feature configuration ──────────────────────────────────────────────────────
 # All features produced by preprocess_data.py in canonical order.
 # Indices 0–9: balanced (padded) dataset; indices 0–10: unpadded dataset.
@@ -32,19 +56,54 @@ FEATURE_REGISTRY = [
     "d_y_signed",                                                    # 10: |y_K|−|y_Ω| (padded+unpadded)
     "o_y_abs",                                                       # 11: |y_Ω| broadcast
     "net_kaon",                                                      # 12: n_K+(real)−n_K−(real), broadcast
+    "eff_weight",                                                    # 13: inverse efficiency 1/ε(pT,η) — correction weight (low ε → high weight)
 ]
 
 # Active features for this run — edit ONLY this list to change the feature set.
 # o_pt excluded: p̄ absorption asymmetry biases Ω̄⁺ reconstruction efficiency.
 FEATURE_NAMES = [
     "k_star", "d_y", "d_phi", "cos_theta_star",
-    "d_y_signed", "net_kaon"
+    "d_y_signed", "net_kaon", "eff_weight"
 ]
 
 # Derived — do not edit manually.
 FEATURE_IDX = [FEATURE_REGISTRY.index(f) for f in FEATURE_NAMES]
 IN_CHANNELS = len(FEATURE_NAMES)
 KSTAR_IDX   = FEATURE_NAMES.index("k_star") if "k_star" in FEATURE_NAMES else None
+
+# ── Efficiency helper function ─────────────────────────────────────────────────
+def get_efficiency_2d(pT, eta, cent, particle):
+    """
+    Compute kaon detection efficiency from 2D (pT, eta) parametrization.
+
+    Args:
+        pT: kaon transverse momentum (GeV/c)
+        eta: kaon pseudorapidity
+        cent: centrality bin (1–9)
+        particle: "Kp" or "Km"
+
+    Returns:
+        efficiency (float, 0–1)
+    """
+    import numpy as np
+    params = EFFICIENCY_PARAMS[particle]
+    idx = cent - 1  # 0-indexed array
+    p0, p1, p2, p3, p4, p5, p6 = (
+        params["P0"][idx], params["P1"][idx], params["P2"][idx],
+        params["P3"][idx], params["P4"][idx], params["P5"][idx], params["P6"][idx],
+    )
+    pt_term = (p0 + p3*pT + p4*pT**2) * np.exp(-np.power(p1/pT, p2))
+    eta_term = np.exp(-np.power(np.power(eta/p5, 2), p6))
+    return pt_term * eta_term
+
+def get_inv_eff(pT, eta, cent, charge):
+    """Inverse efficiency 1/ε(pT, η) for the kaon's actual charge.
+    Low efficiency → high weight: each detected kaon represents more true kaons.
+    charge: +1 for K+, -1 for K-.
+    """
+    particle = "Kp" if charge > 0 else "Km"
+    eps = get_efficiency_2d(pT, eta, cent, particle)
+    return 1.0 / max(eps, 1e-4)
 
 # Transformer Hyperparameters
 D_MODEL = 128

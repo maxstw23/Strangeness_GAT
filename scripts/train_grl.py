@@ -217,12 +217,19 @@ def run_training(args):
     # Using global bins (not within-class) so the adversary targets the full
     # between-class multiplicity distribution — the artifact on unpadded data.
     import numpy as np
-    n_stats = 1 + config.IN_CHANNELS  # n_kaons + std(f_i) for each classifier feature
+
+    # Broadcast features are per-event constants (same value for all kaons in an event),
+    # so their std across kaons is always 0 — degenerate adversary targets.  Exclude them.
+    BROADCAST_FEATURES = {"o_pt", "o_cos_psi1", "o_cos2_psi2", "o_y_abs", "net_kaon"}
+    non_broadcast_idx = [i for i, f in enumerate(config.FEATURE_NAMES)
+                         if f not in BROADCAST_FEATURES]  # local indices into x columns
+
+    n_stats = 1 + len(non_broadcast_idx)  # n_kaons + std(f_i) for non-broadcast features
 
     # Build raw statistics matrix: (N, n_stats)
     ns_arr  = n_kaons_t.numpy()                                        # (N,)
-    sig_arr = torch.stack([x.std(dim=0).nan_to_num()
-                           for x, _ in dataset]).numpy()               # (N, IN_CHANNELS)
+    sig_arr = torch.stack([x[:, non_broadcast_idx].std(dim=0).nan_to_num()
+                           for x, _ in dataset]).numpy()               # (N, len(non_broadcast_idx))
     stats_arr = np.concatenate([ns_arr[:, None], sig_arr], axis=1)     # (N, n_stats)
 
     # Compute global quantile boundaries for each statistic
@@ -238,11 +245,11 @@ def run_training(args):
         all_bin_labels[:, s] = torch.from_numpy(bins)
 
     # Attach all bin labels to dataset tuples (replace single bin_label)
-    dataset = [(x, y, all_bin_labels[i]) for i, (x, y, _) in enumerate(dataset)]
+    dataset = [(x, y, all_bin_labels[i]) for i, (x, y) in enumerate(dataset)]
 
     log(f"GRL Run {run_number} | features={config.FEATURE_NAMES} | IN_CHANNELS={config.IN_CHANNELS} | target Anti recall={target_anti_rec:.2f}")
     log(f"Dataset: {n_o} Omega, {n_a} Anti-Omega")
-    log(f"ADV_LAMBDA={args.adv_lambda} | GRL_N_BINS={GRL_N_BINS} (global) | n_stats={n_stats} | GRL_ALPHA_MAX={GRL_ALPHA_MAX} | pretrain={GRL_PRETRAIN} | sigmoidal schedule")
+    log(f"ADV_LAMBDA={args.adv_lambda} | GRL_N_BINS={GRL_N_BINS} (global) | n_stats={n_stats} | non_broadcast={[config.FEATURE_NAMES[i] for i in non_broadcast_idx]} | GRL_ALPHA_MAX={GRL_ALPHA_MAX} | pretrain={GRL_PRETRAIN} | sigmoidal schedule")
 
     random.shuffle(dataset)
     split = int(0.8 * len(dataset))
@@ -265,6 +272,7 @@ def run_training(args):
         dim_feedforward=config.DIM_FEEDFORWARD,
         dropout=config.DROPOUT_RATE,
         n_bins=GRL_N_BINS,
+        n_stats=n_stats,
     ).to(config.DEVICE)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     log(f"OmegaTransformerGRL: {n_params:,} parameters")
@@ -347,7 +355,7 @@ def run_training(args):
         with torch.no_grad():
             for x, y, mask, _len, _bins in val_loader:
                 x, mask = x.to(config.DEVICE), mask.to(config.DEVICE)
-                logits, _, __ = ema_model(x, mask, alpha=0.0)
+                logits, _ = ema_model(x, mask, alpha=0.0)
                 p_anti = torch.softmax(logits, dim=1)[:, 1]
                 all_p_anti.append(p_anti.cpu())
                 all_y.append(y)

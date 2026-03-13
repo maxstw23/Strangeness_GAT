@@ -45,12 +45,16 @@ K+/K- asymmetry means that Ω⁻ events tend to have more opposite-sign kaons th
 kaons, while Ω̄⁺ events are closer to balance. A model could exploit this multiplicity
 difference to infer the baryon sign without using any spatial or momentum information.
 
-To resolve this, **kaon multiplicity is force-matched**: for each Ω̄⁺ event, additional K⁻ are
-sampled until the K⁻ count equals the K⁺ count. Fake K⁻ are drawn from an **event-mixed pool**
-built from other Ω̄⁺ events with similar Omega kinematics, binned on (|y_Ω|, pT_Ω) quartiles
-(4×4 = 16 bins). This ensures fake kaons have realistic kinematic relationships to the Omega
-they are paired with — a global pool was found to produce pathological d_y_signed values that
-the model exploited as a padding artifact.
+**Current approach (unpadded + subsampling)**: Training uses the raw, unpadded events — no
+fake kaons are added. Instead, at each training batch, each Ω⁻ event's K+ set is randomly
+subsampled down to a count drawn from the empirical Anti-Omega n_kaons distribution. This
+preserves genuine kaon kinematics while preventing the model from exploiting the raw
+multiplicity difference.
+
+**Prior approach (event-mixed padding)**: For each Ω̄⁺ event, additional K⁻ were
+sampled from an event-mixed pool built from other Ω̄⁺ events with similar Omega kinematics,
+binned on (|y_Ω|, pT_Ω) quartiles (4×4 = 16 bins). This is still used for the balanced
+(padded) dataset but not for the current unpadded training.
 
 ## Model Architecture
 

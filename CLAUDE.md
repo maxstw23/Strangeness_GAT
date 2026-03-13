@@ -28,26 +28,9 @@
 **OmegaTransformer** (`models/transformer_model.py`) — 2-layer Pre-LN Transformer, CLS token, no positional encoding.
 Checkpoint: `models/omega_transformer.pth`
 
-Config (`config.py`): `D_MODEL=128`, `NHEAD=4`, `NUM_LAYERS=2`, `DIM_FEEDFORWARD=256`, `KSTAR_CLIP=8.0`
-
 ## Features
 
 Canonical order in `FEATURE_REGISTRY` (`config.py`). Active set controlled by `FEATURE_NAMES`.
-
-**Current active features (6):** `f_pt`, `k_star`, `d_y`, `d_phi`, `cos_theta_star`, `d_y_signed`
-
-| Name | Description |
-|---|---|
-| `f_pt` | Kaon pT [GeV/c] |
-| `k_star` | Lorentz-invariant relative momentum in kaon-Ω pair rest frame [GeV/c] |
-| `d_y` | \|y_K − y_Ω\| — absolute rapidity separation |
-| `d_phi` | \|φ_K − φ_Ω\| in [0, π] |
-| `cos_theta_star` | cos(θ*) = k*_z / \|k*\| — beam-axis angle in pair rest frame |
-| `d_y_signed` | \|y_K\| − \|y_Ω\| — midrapidity proximity gap |
-
-Excluded: `o_pt` (p̄ absorption biases Ω̄⁺ efficiency), `o_y_abs` (introduces biased rapidity shift), EP cosines (confirmed inert, run18).
-
-The balanced dataset (`data/balanced_omega_anti.pt`) stores 12 features per kaon. Preprocessing uses event-mixed K⁻ pool (binned on |y_Ω|, pT_Ω quartiles) to eliminate padding kinematic artifacts. k* uses PDG masses: m_K = 0.493677, m_Ω = 1.67245 GeV/c².
 
 ## Scripts
 
@@ -65,13 +48,136 @@ Loss: **per-class-mean BCE** — `mean(−log p | Anti) + mean(−log(1−p) | O
 Checkpoint criterion: best **O@A=0.90** on validation set.
 Scheduler: ReduceLROnPlateau on O@A=0.90, patience=5, factor=0.5.
 
-Best result to date: **O@A=0.90 = 0.3345** (run25). See `docs/experiments.md` for full history.
+<!-- rtk-instructions v2 -->
+# RTK (Rust Token Killer) - Token-Optimized Commands
 
-## Physics Goal
+## Golden Rule
 
-Classifier assigns p(x) ≈ P(pair-produced | kaon kinematics) to each Ω⁻ event.
-- **Positive**: Ω̄⁺ — all pair-produced (labeled)
-- **Unlabeled**: Ω⁻ — mixture of pair-produced (fraction π) and BN-transport via junction
+**Always prefix commands with `rtk`**. If RTK has a dedicated filter, it uses it. If not, it passes through unchanged. This means RTK is always safe to use.
 
-Goal: **separate the two mechanisms** and profile their kinematic differences (k*, Δy, cos θ*, flow).
-Not f_BN estimation — thermal models already constrain that. The goal is mechanism separation.
+**Important**: Even in command chains with `&&`, use `rtk`:
+```bash
+# ❌ Wrong
+git add . && git commit -m "msg" && git push
+
+# ✅ Correct
+rtk git add . && rtk git commit -m "msg" && rtk git push
+```
+
+## RTK Commands by Workflow
+
+### Build & Compile (80-90% savings)
+```bash
+rtk cargo build         # Cargo build output
+rtk cargo check         # Cargo check output
+rtk cargo clippy        # Clippy warnings grouped by file (80%)
+rtk tsc                 # TypeScript errors grouped by file/code (83%)
+rtk lint                # ESLint/Biome violations grouped (84%)
+rtk prettier --check    # Files needing format only (70%)
+rtk next build          # Next.js build with route metrics (87%)
+```
+
+### Test (90-99% savings)
+```bash
+rtk cargo test          # Cargo test failures only (90%)
+rtk vitest run          # Vitest failures only (99.5%)
+rtk playwright test     # Playwright failures only (94%)
+rtk test <cmd>          # Generic test wrapper - failures only
+```
+
+### Git (59-80% savings)
+```bash
+rtk git status          # Compact status
+rtk git log             # Compact log (works with all git flags)
+rtk git diff            # Compact diff (80%)
+rtk git show            # Compact show (80%)
+rtk git add             # Ultra-compact confirmations (59%)
+rtk git commit          # Ultra-compact confirmations (59%)
+rtk git push            # Ultra-compact confirmations
+rtk git pull            # Ultra-compact confirmations
+rtk git branch          # Compact branch list
+rtk git fetch           # Compact fetch
+rtk git stash           # Compact stash
+rtk git worktree        # Compact worktree
+```
+
+Note: Git passthrough works for ALL subcommands, even those not explicitly listed.
+
+### GitHub (26-87% savings)
+```bash
+rtk gh pr view <num>    # Compact PR view (87%)
+rtk gh pr checks        # Compact PR checks (79%)
+rtk gh run list         # Compact workflow runs (82%)
+rtk gh issue list       # Compact issue list (80%)
+rtk gh api              # Compact API responses (26%)
+```
+
+### JavaScript/TypeScript Tooling (70-90% savings)
+```bash
+rtk pnpm list           # Compact dependency tree (70%)
+rtk pnpm outdated       # Compact outdated packages (80%)
+rtk pnpm install        # Compact install output (90%)
+rtk npm run <script>    # Compact npm script output
+rtk npx <cmd>           # Compact npx command output
+rtk prisma              # Prisma without ASCII art (88%)
+```
+
+### Files & Search (60-75% savings)
+```bash
+rtk ls <path>           # Tree format, compact (65%)
+rtk read <file>         # Code reading with filtering (60%)
+rtk grep <pattern>      # Search grouped by file (75%)
+rtk find <pattern>      # Find grouped by directory (70%)
+```
+
+### Analysis & Debug (70-90% savings)
+```bash
+rtk err <cmd>           # Filter errors only from any command
+rtk log <file>          # Deduplicated logs with counts
+rtk json <file>         # JSON structure without values
+rtk deps                # Dependency overview
+rtk env                 # Environment variables compact
+rtk summary <cmd>       # Smart summary of command output
+rtk diff                # Ultra-compact diffs
+```
+
+### Infrastructure (85% savings)
+```bash
+rtk docker ps           # Compact container list
+rtk docker images       # Compact image list
+rtk docker logs <c>     # Deduplicated logs
+rtk kubectl get         # Compact resource list
+rtk kubectl logs        # Deduplicated pod logs
+```
+
+### Network (65-70% savings)
+```bash
+rtk curl <url>          # Compact HTTP responses (70%)
+rtk wget <url>          # Compact download output (65%)
+```
+
+### Meta Commands
+```bash
+rtk gain                # View token savings statistics
+rtk gain --history      # View command history with savings
+rtk discover            # Analyze Claude Code sessions for missed RTK usage
+rtk proxy <cmd>         # Run command without filtering (for debugging)
+rtk init                # Add RTK instructions to CLAUDE.md
+rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
+```
+
+## Token Savings Overview
+
+| Category | Commands | Typical Savings |
+|----------|----------|-----------------|
+| Tests | vitest, playwright, cargo test | 90-99% |
+| Build | next, tsc, lint, prettier | 70-87% |
+| Git | status, log, diff, add, commit | 59-80% |
+| GitHub | gh pr, gh run, gh issue | 26-87% |
+| Package Managers | pnpm, npm, npx | 70-90% |
+| Files | ls, read, grep, find | 60-75% |
+| Infrastructure | docker, kubectl | 85% |
+| Network | curl, wget | 65-70% |
+
+Overall average: **60-90% token reduction** on common development operations.
+<!-- /rtk-instructions -->

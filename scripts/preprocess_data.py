@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 import os
+import config
 
 # PDG masses in GeV/c²
 M_KAON  = 0.493677
@@ -135,6 +136,7 @@ def run_balanced_preprocessing(input_file, output_file):
         f_px = k_px[oppo_mask]
         f_py = k_py[oppo_mask]
         f_pz = k_pz[oppo_mask]
+        f_q = k_q[oppo_mask]  # kaon charges for selected kaons
         n_oppo = len(f_px)
 
         # For Ω̄⁺ events: pad K⁻ to reach K⁺ count using event-mixed pool (or trim if K⁻ > K⁺)
@@ -152,9 +154,11 @@ def run_balanced_preprocessing(input_file, output_file):
                 f_px = np.concatenate([f_px, samples[:, 0]])
                 f_py = np.concatenate([f_py, samples[:, 1]])
                 f_pz = np.concatenate([f_pz, samples[:, 2]])
+                f_q = np.concatenate([f_q, np.full(len(samples), -1)])  # padded kaons are K⁻
             elif n_oppo > n_pos:
                 idx = np.random.choice(n_oppo, size=n_pos, replace=False)
                 f_px, f_py, f_pz = f_px[idx], f_py[idx], f_pz[idx]
+                f_q = f_q[idx]
 
         # --- COORDINATE TRANSFORMATION ---
         # 1. Omega Kinematics
@@ -199,10 +203,15 @@ def run_balanced_preprocessing(input_file, output_file):
         o_pt_broadcast = np.full(len(f_px), o_pt)
         o_y_abs = np.full(len(f_px), abs(y_o))  # index 11: |y_Ω| broadcast
         net_kaon_broadcast = np.full(len(f_px), net_kaon_val)
+        # Per-kaon 1/ε: low efficiency → higher weight (kaon represents more true kaons)
+        eff_weights = np.array([
+            config.get_inv_eff(float(pt), float(eta), cent=8, charge=int(q))
+            for pt, eta, q in zip(f_pt, f_eta, f_q)
+        ])
         node_features = np.stack([
             f_pt, k_star, d_y, d_phi, o_pt_broadcast, cos_theta_st,
             o_cos_psi1, o_cos2_psi2, f_cos_psi1, f_cos2_psi2,
-            d_y_signed, o_y_abs, net_kaon_broadcast  # index 10, 11, 12
+            d_y_signed, o_y_abs, net_kaon_broadcast, eff_weights  # indices 10–13
         ], axis=1)
 
         y_label = 1 if o_charge > 0 else 0
@@ -225,7 +234,7 @@ def run_balanced_preprocessing(input_file, output_file):
     feature_names = [
         "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",
         "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2",
-        "d_y_signed", "o_y_abs", "net_kaon"
+        "d_y_signed", "o_y_abs", "net_kaon", "eff_weight"
     ]
     for name, m, s in zip(feature_names, means, stds):
         print(f"  {name}: mean={m:.4f}, std={s:.4f}")
@@ -278,7 +287,9 @@ def run_unpadded_preprocessing(input_file, output_file):
         o_pt = np.sqrt(o_px ** 2 + o_py ** 2)
         o_phi = np.arctan2(o_py, o_px)
 
-        f_pt = np.sqrt(f_px ** 2 + f_py ** 2)
+        f_pt  = np.sqrt(f_px ** 2 + f_py ** 2)
+        f_p   = np.sqrt(f_px ** 2 + f_py ** 2 + f_pz ** 2)
+        f_eta = np.arctanh(np.clip(f_pz / np.maximum(f_p, 1e-10), -1 + 1e-7, 1 - 1e-7))
         f_phi = np.arctan2(f_py, f_px)
 
         k_star       = compute_kstar(f_px, f_py, f_pz, o_px, o_py, o_pz)
@@ -310,11 +321,18 @@ def run_unpadded_preprocessing(input_file, output_file):
         net_kaon_val = int(np.sum(k_q > 0)) - int(np.sum(k_q < 0))
         net_kaon_broadcast = np.full(len(f_px), net_kaon_val)
 
-        # 13 features: identical layout to balanced dataset — FEATURE_REGISTRY valid for both
+        # Per-kaon 1/ε: low efficiency → higher weight (kaon represents more true kaons)
+        f_charge = 1 if int(o_charge) < 0 else -1  # K+ for Ω⁻, K- for Ω̄⁺
+        eff_weights = np.array([
+            config.get_inv_eff(float(pt), float(eta), cent=8, charge=f_charge)
+            for pt, eta in zip(f_pt, f_eta)
+        ])
+
+        # 14 features: 13-column layout + eff_weight at index 13
         node_features = np.stack([
             f_pt, k_star, d_y, d_phi, o_pt_broadcast, cos_theta_st,
             o_cos_psi1, o_cos2_psi2, f_cos_psi1, f_cos2_psi2,
-            d_y_signed, o_y_abs, net_kaon_broadcast  # indices 10, 11, 12
+            d_y_signed, o_y_abs, net_kaon_broadcast, eff_weights  # indices 10–13
         ], axis=1)
 
         y_label = 1 if o_charge > 0 else 0
@@ -337,7 +355,7 @@ def run_unpadded_preprocessing(input_file, output_file):
     feature_names = [
         "f_pt", "k_star", "d_y", "d_phi", "o_pt", "cos_theta_star",
         "o_cos_psi1", "o_cos2_psi2", "f_cos_psi1", "f_cos2_psi2",
-        "d_y_signed", "o_y_abs", "net_kaon"
+        "d_y_signed", "o_y_abs", "net_kaon", "eff_weight"
     ]
     for name, m, s in zip(feature_names, means, stds):
         print(f"  {name}: mean={m:.4f}, std={s:.4f}")

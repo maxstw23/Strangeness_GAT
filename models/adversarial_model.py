@@ -114,10 +114,12 @@ class OmegaTransformerGRL(_TransformerBase):
     """
 
     def __init__(self, in_channels, d_model, nhead, num_layers, dim_feedforward,
-                 dropout=0.1, n_bins=5):
+                 dropout=0.1, n_bins=5, n_stats=None):
         super().__init__(in_channels, d_model, nhead, num_layers, dim_feedforward, dropout)
         self.n_bins  = n_bins
-        self.n_stats = 1 + in_channels  # n_kaons + std(f_i) for each classifier input feature
+        # n_stats: n_kaons + std(f_i) for each non-broadcast classifier feature.
+        # Defaults to 1 + in_channels for backwards compatibility.
+        self.n_stats = n_stats if n_stats is not None else 1 + in_channels
 
         self.classifier = nn.Sequential(
             nn.LayerNorm(d_model),

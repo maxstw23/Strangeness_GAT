@@ -11,7 +11,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import random
 import config
-from transformer_model import OmegaTransformer
+from transformer_model import OmegaTransformer, OmegaTransformerEdge
 from tqdm import tqdm
 
 EMA_DECAY = 0.999  # EMA shadow model decay for stable checkpointing
@@ -41,6 +41,10 @@ def _parse_args():
                         help="Comma-separated feature names to override config.FEATURE_NAMES")
     parser.add_argument("--target-anti-rec", type=float, default=0.90,
                         help="Anti recall target for operating-point metric (default: 0.90)")
+    parser.add_argument("--subsample", action="store_true",
+                        help="Subsample Omega K+ to Anti-Omega n_kaons distribution (unpadded data)")
+    parser.add_argument("--edge-bias", action="store_true",
+                        help="Use OmegaTransformerEdge: add pairwise (ΔR, Δy, cosΔφ) attention bias")
     args, _ = parser.parse_known_args()
     if args.data == "unpadded":
         config.DATA_PATH  = config.DATA_PATH_UNPADDED
@@ -76,21 +80,31 @@ class KaonDataset(Dataset):
         return self.data[i]  # (x, y)
 
 
-def collate_fn(batch):
-    xs, ys = zip(*batch)
-    max_len = max(x.shape[0] for x in xs)
-    n_feat = xs[0].shape[1]
-    padded = torch.zeros(len(xs), max_len, n_feat)
-    # mask: True = padding position (ignored by attention)
-    mask = torch.ones(len(xs), max_len, dtype=torch.bool)
-    for i, x in enumerate(xs):
-        n = x.shape[0]
-        padded[i, :n] = x
-        mask[i, :n] = False
-    return padded, torch.stack(ys), mask
+def make_collate_fn(subsample_dist=None):
+    """subsample_dist: list of Anti-Omega n_kaons values to sample from, or None."""
+    def collate_fn(batch):
+        xs, ys = zip(*batch)
+        processed = []
+        for x, y in zip(xs, ys):
+            if subsample_dist is not None and y.item() == 0:  # Omega event
+                k = min(random.choice(subsample_dist), x.shape[0])
+                idx = torch.randperm(x.shape[0])[:k]
+                x = x[idx]
+            processed.append(x)
+        max_len = max(x.shape[0] for x in processed)
+        n_feat  = processed[0].shape[1]
+        padded = torch.zeros(len(processed), max_len, n_feat)
+        # mask: True = padding position (ignored by attention)
+        mask = torch.ones(len(processed), max_len, dtype=torch.bool)
+        for i, x in enumerate(processed):
+            n = x.shape[0]
+            padded[i, :n] = x
+            mask[i, :n] = False
+        return padded, torch.stack(ys), mask
+    return collate_fn
 
 
-def run_training(target_anti_rec=0.90):
+def run_training(args, target_anti_rec=0.90):
     # Fix seeds for reproducibility
     random.seed(42)
     torch.manual_seed(42)
@@ -129,29 +143,40 @@ def run_training(target_anti_rec=0.90):
     n_o = (labels_t == 0).sum().item()
     n_a = (labels_t == 1).sum().item()
 
+    # Anti-Omega n_kaons empirical distribution (for subsampling Omega events)
+    anti_nk_dist = [x.shape[0] for x, lbl in dataset if lbl.item() == 1]
+
     log(f"Run {run_number} | features={config.FEATURE_NAMES} | IN_CHANNELS={config.IN_CHANNELS} | D_MODEL={config.D_MODEL}")
     log(f"Dataset: {n_o} Omega, {n_a} Anti-Omega")
     log(f"Loss: per-class-mean BCE | target Anti recall: {target_anti_rec:.2f}")
-    log(f"EMA decay: {EMA_DECAY}")
+    log(f"EMA decay: {EMA_DECAY} | subsample={args.subsample}")
 
     # 80/20 split (seed already fixed above)
     random.shuffle(dataset)
     split = int(0.8 * len(dataset))
+    collate = make_collate_fn(anti_nk_dist if args.subsample else None)
     train_loader = DataLoader(KaonDataset(dataset[:split]), batch_size=config.BATCH_SIZE,
-                              shuffle=True, collate_fn=collate_fn,
+                              shuffle=True, collate_fn=collate,
                               num_workers=4, pin_memory=True, persistent_workers=True)
     val_loader = DataLoader(KaonDataset(dataset[split:]), batch_size=config.BATCH_SIZE,
-                            collate_fn=collate_fn,
+                            collate_fn=collate,
                             num_workers=2, pin_memory=True, persistent_workers=True)
 
-    model = OmegaTransformer(
+    common = dict(
         in_channels=config.IN_CHANNELS,
         d_model=config.D_MODEL,
         nhead=config.NHEAD,
         num_layers=config.NUM_LAYERS,
         dim_feedforward=config.DIM_FEEDFORWARD,
         dropout=config.DROPOUT_RATE,
-    ).to(config.DEVICE)
+    )
+    if args.edge_bias:
+        dy_idx   = config.FEATURE_NAMES.index("d_y")
+        dphi_idx = config.FEATURE_NAMES.index("d_phi")
+        model = OmegaTransformerEdge(**common, dy_idx=dy_idx, dphi_idx=dphi_idx).to(config.DEVICE)
+        log(f"Architecture: OmegaTransformerEdge (dy_idx={dy_idx}, dphi_idx={dphi_idx})")
+    else:
+        model = OmegaTransformer(**common).to(config.DEVICE)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     log(f"Model parameters: {n_params:,}")
 
@@ -244,4 +269,4 @@ def run_training(target_anti_rec=0.90):
 
 if __name__ == "__main__":
     args = _parse_args()
-    run_training(target_anti_rec=args.target_anti_rec)
+    run_training(args, target_anti_rec=args.target_anti_rec)
