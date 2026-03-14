@@ -23,8 +23,9 @@ scripts/train.py  →  models/omega_transformer.pth
 
 ## Step 1: Preprocessing
 
-```
-venv/bin/python scripts/preprocess_data.py
+```bash
+source venv/bin/activate
+python scripts/preprocess_data.py
 ```
 
 Reads `data/omega_kaon_all.root` (TTree: `ml_tree`) and outputs:
@@ -43,14 +44,16 @@ Processing per event:
 
 ## Step 2: Inspection (optional)
 
-```
-venv/bin/python scripts/inspect_data.py
+```bash
+source venv/bin/activate
+python scripts/inspect_data.py
 ```
 
 Prints feature statistics and checks for NaNs and out-of-range values.
 
-```
-venv/bin/python scripts/explore_data.py
+```bash
+source venv/bin/activate
+python scripts/explore_data.py
 ```
 
 Produces `plots/data_exploration.png` comparing per-kaon feature distributions and per-event
@@ -60,8 +63,9 @@ aggregates between Omega and Anti events. See `data_exploration.md` for findings
 
 ## Step 3: Training
 
-```
-venv/bin/python scripts/train.py
+```bash
+source venv/bin/activate
+python scripts/train.py
 ```
 
 Trains OmegaTransformer on the preprocessed dataset. Per-epoch output:
@@ -75,12 +79,34 @@ Epoch 001 | Omega Rec: 0.562 | Anti Rec: 0.800 | A@0.55: 0.738 | Score: 0.3613 |
 
 Loss function: per-class-mean asymmetric BCE with `ANTI_WEIGHT = 2.0`. See CLAUDE.md for details.
 
+### Dry-run option
+
+To test the full pipeline quickly without waiting for convergence:
+
+```bash
+source venv/bin/activate
+python scripts/train.py --dry-run
+```
+
+Dry-run mode:
+- Uses first 1000 samples (instead of full dataset)
+- Runs 2 epochs (instead of 200)
+- Still saves checkpoint, logs, and produces all metrics
+- Useful for verifying preprocessing, dataloaders, and model forward/backward passes
+
+You can combine `--dry-run` with other options:
+```bash
+source venv/bin/activate
+python scripts/train.py --dry-run --edge-bias --data unpadded
+```
+
 ---
 
 ## Step 4: Evaluation
 
-```
-venv/bin/python scripts/evaluate_physics.py
+```bash
+source venv/bin/activate
+python scripts/evaluate_physics.py
 ```
 
 Reports argmax metrics and a threshold scan on the validation set:
@@ -89,8 +115,9 @@ Reports argmax metrics and a threshold scan on the validation set:
 - **Physics Score**: Omega_recall + Anti_recall − 1
 - **f_BN** (corrected): BN-carrying fraction estimate accounting for class imbalance ratio r
 
-```
-venv/bin/python scripts/plot_recall_tradeoff.py
+```bash
+source venv/bin/activate
+python scripts/plot_recall_tradeoff.py
 ```
 
 Dense threshold sweep (1000 points) producing `plots/recall_tradeoff.png`:
@@ -102,8 +129,9 @@ Dense threshold sweep (1000 points) producing `plots/recall_tradeoff.png`:
 
 ## Step 5: Interpretation
 
-```
-venv/bin/python scripts/interpret_model.py
+```bash
+source venv/bin/activate
+python scripts/interpret_model.py
 ```
 
 Runs two interpretability analyses on the saved checkpoint (see `interpretation.md`):
