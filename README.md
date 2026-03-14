@@ -7,7 +7,7 @@ Machine learning for Omega hyperon production in heavy-ion collisions at RHIC BE
 OmegaNet studies baryon number transport via the gluon junction picture using a 2-layer Pre-LN Transformer model with pileup classification and charge blinding.
 
 **Key Features:**
-- Preprocesses ROOT data into balanced Omega/Anti-Omega datasets
+- Preprocesses ROOT data into unpadded, unbalanced datasets with subsampling
 - Trains OmegaTransformer with per-class-mean BCE loss
 - Evaluates physics metrics (recall at Purity=0.90)
 - Permutation importance and attention analysis
@@ -29,8 +29,8 @@ This installs PyTorch (CUDA-enabled), tqdm, uproot, and awkward.
 ## Quick Start
 
 ```bash
-# Preprocess ROOT data
-python scripts/preprocess_data.py --mode unpadded
+# Preprocess ROOT data (unpadded, unbalanced with subsampling)
+python scripts/preprocess_data.py
 
 # Train model
 python scripts/train.py
@@ -60,7 +60,7 @@ OmegaNet/
 │   ├── plot_recall_tradeoff.py    # Recall vs Purity curve
 │   └── interpret_model.py         # Attention + importance
 ├── data/
-│   └── balanced_omega_anti.pt     # Preprocessed dataset
+│   └── omega_anti.pt              # Preprocessed dataset (unpadded, unbalanced)
 └── plots/                         # Evaluation outputs
 ```
 
