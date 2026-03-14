@@ -1,9 +1,10 @@
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import uproot
 import awkward as ak
 import numpy as np
 import torch
 from tqdm import tqdm
-import os
 import config
 
 # PDG masses in GeV/c²

@@ -49,9 +49,9 @@ pip install tqdm
 echo "Installing uproot and awkward..."
 pip install uproot awkward
 
-# Install scipy and matplotlib (for efficiency fitting and plotting)
-echo "Installing scipy and matplotlib..."
-pip install scipy matplotlib
+# Install scipy, matplotlib, and iminuit (for efficiency fitting and plotting)
+echo "Installing scipy, matplotlib, and iminuit..."
+pip install scipy matplotlib iminuit
 
 echo ""
 echo "=== Setup Complete ==="

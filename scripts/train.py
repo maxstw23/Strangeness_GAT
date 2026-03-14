@@ -85,7 +85,7 @@ class KaonDataset(Dataset):
 def make_collate_fn(subsample_dist=None):
     """subsample_dist: list of Anti-Omega n_kaons values to sample from, or None."""
     def collate_fn(batch):
-        xs, ys = zip(*batch)
+        xs, ys, eff_ws = zip(*batch)
         processed = []
         for x, y in zip(xs, ys):
             if subsample_dist is not None and y.item() == 0:  # Omega event
@@ -102,7 +102,7 @@ def make_collate_fn(subsample_dist=None):
             n = x.shape[0]
             padded[i, :n] = x
             mask[i, :n] = False
-        return padded, torch.stack(ys), mask
+        return padded, torch.stack(ys), mask, torch.stack(eff_ws)
     return collate_fn
 
 
@@ -124,6 +124,8 @@ def run_training(args, target_anti_rec=0.90):
     feature_means = stats['means'][config.FEATURE_IDX]
     feature_stds = stats['stds'][config.FEATURE_IDX]
 
+    EFF_WEIGHT_IDX = config.FEATURE_REGISTRY.index("eff_weight")
+
     raw_data = torch.load(config.DATA_PATH)
 
     # Dry run: limit to 1000 samples
@@ -140,23 +142,26 @@ def run_training(args, target_anti_rec=0.90):
         target = y.squeeze().long()
         labels.append(target.item())
 
+        # Extract per-event loss weight (mean inverse efficiency across kaons)
+        eff_w = x[:, EFF_WEIGHT_IDX].mean()
+
         x = x[:, config.FEATURE_IDX]
         if config.KSTAR_IDX is not None:
             x[:, config.KSTAR_IDX] = torch.clamp(x[:, config.KSTAR_IDX], max=config.KSTAR_CLIP)
         x = (x - feature_means) / feature_stds
 
-        dataset.append((x, target))
+        dataset.append((x, target, eff_w))
 
     labels_t = torch.tensor(labels)
     n_o = (labels_t == 0).sum().item()
     n_a = (labels_t == 1).sum().item()
 
     # Anti-Omega n_kaons empirical distribution (for subsampling Omega events)
-    anti_nk_dist = [x.shape[0] for x, lbl in dataset if lbl.item() == 1]
+    anti_nk_dist = [x.shape[0] for x, lbl, _ in dataset if lbl.item() == 1]
 
     log(f"Run {run_number} | features={config.FEATURE_NAMES} | IN_CHANNELS={config.IN_CHANNELS} | D_MODEL={config.D_MODEL}")
-    log(f"Dataset: {n_o} Omega, {n_a} Anti-Omega")
-    log(f"Loss: per-class-mean BCE | target Anti recall: {target_anti_rec:.2f}")
+    log(f"Dataset: {args.data} ({config.DATA_PATH}) | {n_o} Omega, {n_a} Anti-Omega")
+    log(f"Loss: per-class efficiency-weighted BCE | target Anti recall: {target_anti_rec:.2f}")
     log(f"EMA decay: {EMA_DECAY} | subsample={args.subsample}")
 
     # 80/20 split (seed already fixed above)
@@ -202,16 +207,20 @@ def run_training(args, target_anti_rec=0.90):
     log(f"Starting training... (max_epochs={max_epochs})\n")
     for epoch in range(1, max_epochs + 1):
         model.train()
-        for x, y, mask in train_loader:
+        for x, y, mask, eff_w in train_loader:
             x, y, mask = x.to(config.DEVICE), y.to(config.DEVICE), mask.to(config.DEVICE)
+            eff_w = eff_w.to(config.DEVICE)
             optimizer.zero_grad()
             out = model(x, mask)
             p = torch.softmax(out, dim=1)[:, 1].clamp(1e-7, 1 - 1e-7)
             is_a = (y == 1)
             is_o = (y == 0)
 
-            # Per-class-mean BCE
-            loss = (-torch.log(p[is_a]).mean() + -torch.log(1 - p[is_o]).mean())
+            # Per-class weighted BCE (eff_weight = 1/ε upweights low-efficiency events)
+            w_a = eff_w[is_a]
+            w_o = eff_w[is_o]
+            loss = (-(w_a * torch.log(p[is_a])).sum() / w_a.sum() +
+                    -(w_o * torch.log(1 - p[is_o])).sum() / w_o.sum())
 
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
@@ -226,7 +235,7 @@ def run_training(args, target_anti_rec=0.90):
         ema_model.eval()
         all_p_anti, all_y = [], []
         with torch.no_grad():
-            for x, y, mask in val_loader:
+            for x, y, mask, _ in val_loader:
                 x, y, mask = x.to(config.DEVICE), y.to(config.DEVICE), mask.to(config.DEVICE)
                 out = ema_model(x, mask)
                 p_anti = torch.softmax(out, dim=1)[:, 1]
